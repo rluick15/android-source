@@ -9,7 +9,8 @@ public class Operations extends Object {
 		 *	Place 18 into x
 		 *****************************************************************/
 
-		int x;	
+		int x;
+		x = 18;	
 
 		/*****************************************************************
 		 *  ASSIGNMENT:
@@ -17,6 +18,7 @@ public class Operations extends Object {
 		******************************************************************/
 
 		int y;
+		y = ++x;
 
 		/*****************************************************************
 		 *	ASSIGNMENT:
@@ -24,6 +26,7 @@ public class Operations extends Object {
 		******************************************************************/
 
 		int z;
+		z = x * y;
 
 		/*****************************************************************
 		 *	ASSIGNMENT:
@@ -31,13 +34,15 @@ public class Operations extends Object {
 		******************************************************************/
 
 		int remainder;
+		remainder = z % 17;
 
 		/*****************************************************************
 		 *	ASSIGNMENT:
 		 *	Assign 5 to floaty and then divide it by 3
 		*****************************************************************/
 
-		float floaty;
+		float floaty = 5;
+		floaty = floaty / 3;
 
 		/*****************************************************************
 		 *	ASSIGNMENT:
@@ -45,7 +50,8 @@ public class Operations extends Object {
 		 *	Then multiply dubs by itself
 		******************************************************************/
 
-		double dubs;
+		double dubs = 5.3d;
+		dubs *= dubs;
 
 		if (!testX(x)) {
 			System.out.print("Sorry, looks like something's wrong with 'x'\n");
