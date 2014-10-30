@@ -23,12 +23,20 @@ class Dog {
 	String mColor;
 
 	// ADD MEMBER VARIABLES HERE IF NECESSARY
+	//The number if time the dog has been fed which starts at 0
+	int mMealNum = 0; 
+	//the number of times the dog has played starting at 0
+	int mPlayCount = 0;
 
 	/*
 	 * getHairLength
 	 * @return this Dog's hair length
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public float getHairLength() {
+		return mHairLength;
+	}
+
 
 	/*
 	 * setHairLength
@@ -37,12 +45,18 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public  void setHairLength(float hairLength) {
+		mHairLength = hairLength;
+	}
 
 	/*
 	 * getGender
 	 * @return this Dog's gender
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public String getGender() {
+		return mGender;
+	}
 
 	/*
 	 * setGender
@@ -51,12 +65,18 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void setGender(String gender) {
+		mGender = gender;
+	}
 
 	/*
 	 * getSize
 	 * @return the size of the dog
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public String getSize() {
+		return mSize;
+	}
 
 	/*
 	 * setSize
@@ -65,12 +85,18 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void setSize(String size) {
+		mSize = size;
+	}
 
 	/*
 	 * getAge
 	 * @return this Dog's age
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public int getAge() {
+		return mAge;
+	}
 
 	/*
 	 * setAge
@@ -79,12 +105,18 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void setAge(int age) {
+		mAge = age;
+	}
 
 	/*
 	 * getWeight
 	 * @return this Dog's weight
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public float getWeight() {
+		return mWeight;
+	}
 
 	/*
 	 * setWeight
@@ -93,12 +125,18 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void setWeight(float weight) {
+		mWeight = weight;
+	}
 
 	/*
 	 * getColor
 	 * @return this Dog's color
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public String getColor() {
+		return mColor;
+	}
 
 	/*
 	 * setColor
@@ -107,6 +145,9 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void setColor(String color) {
+		mColor = color;
+	}
 
 	/*
 	 * feed
@@ -117,6 +158,25 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void feed() {		
+		mMealNum++;
+		mWeight += WEIGHT_GAIN;
+
+		if(mMealNum % 3 == 0) {
+			if (mSize.equals("tiny")) {
+				mSize = "small";
+			}
+			else if (mSize.equals("small")) {
+				mSize = "average";
+			}
+			else if (mSize.equals("average")) {
+				mSize = "large";
+			}
+			else {
+				mSize = "large";
+			}
+		} 
+	}
 
 	/*
 	 * play
@@ -127,6 +187,29 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void play() {
+		mPlayCount++;
+
+		mWeight -= WEIGHT_LOSS;
+		if(mWeight < MIN_WEIGHT) {
+			mWeight = MIN_WEIGHT;
+		}
+
+		if(mPlayCount % 6 == 0) {
+			if (mSize.equals("large")) {
+				mSize = "average";
+			}
+			else if (mSize.equals("average")) {
+				mSize = "small";
+			}
+			else if (mSize.equals("small")) {
+				mSize = "tiny";
+			}
+			else {
+				mSize = "tiny";
+			}
+		} 
+	}
 
 	/*
 	 * cutHair
@@ -135,5 +218,11 @@ class Dog {
 	 * @return nothing
 	 */
 	// ADD YOUR METHOD HERE, NAME MUST MATCH DESCRIPTION
+	public void cutHair() {
+		mHairLength -= HAIR_CUT_LENGTH;
+		if (mHairLength < 0f) {
+			mHairLength = 0f;
+		}
+	}
 
 }
