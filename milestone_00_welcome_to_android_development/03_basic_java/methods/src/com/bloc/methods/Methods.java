@@ -32,7 +32,7 @@ public class Methods extends Object {
 		 ************************************************/
 
 		// You are free to modify the return statement
-		return false;
+		return !original;
 	}
 
 	/*
@@ -53,6 +53,9 @@ public class Methods extends Object {
 		/************************************************
 		 * Your work goes here
 		 ************************************************/
+		for(int i = 0; i < numbers.length; i++) {
+			numbers[i] = numbers[i] * -1;
+		}
 	}
 
 
@@ -81,9 +84,18 @@ public class Methods extends Object {
 		/************************************************
 		 * Your work goes here
 		 ************************************************/
+		boolean[] bools = new boolean[someNumbers.length];
+		for (int i = 0; i < someNumbers.length; i++) {
+			if (someNumbers[i] < floor) {
+				bools[i] = false;
+			}
+			else {
+				bools[i] = true;
+			}
+		}
 
 		// You are free to modify the return statement
-		return new boolean [0];
+		return bools;
 	}
 
 	/*
@@ -106,9 +118,27 @@ public class Methods extends Object {
 		/************************************************
 		 * Your work goes here
 		 ************************************************/
+		int[] minMaxArray = new int[2];
+		int minValue = someNumbers[0];
+		for (int i = 1; i < someNumbers.length; i++ ) {
+			if(someNumbers[i] < minValue) {
+				minValue = someNumbers[i];
+			}
+		}
+
+		int maxValue = someNumbers[0];
+		for (int i = 1; i < someNumbers.length; i++ ) {
+			if(someNumbers[i] > maxValue) {
+				maxValue = someNumbers[i];
+			}
+		}
+
+
+		minMaxArray[0] =  minValue;
+		minMaxArray[1] =  maxValue;
 
 		// You are free to modify the return statement
-		return new int[2];
+		return minMaxArray;
 	}
 
 
