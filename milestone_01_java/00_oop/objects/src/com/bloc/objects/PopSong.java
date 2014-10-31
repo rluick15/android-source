@@ -10,6 +10,14 @@ class PopSong extends Song {
 	 *				 year and weeks on billboard
 	 */
 	// CONSTRUCTOR CODE GOES HERE
+	PopSong() {
+		this(new Ensemble("The Beatles", 
+			new Artist[]{new Artist("John", "Lennon"), 
+			new Artist("Paul", "McCartney"), 
+			new Artist("George", "Harrison"), 
+			new Artist("Ringo", "Starr")}),
+			 "Love Me Do", 1964, 14);
+	}
 
 	/*
 	 * Partial Constructor
@@ -18,6 +26,12 @@ class PopSong extends Song {
 	 * @param title the song title
 	 */
 	// CONSTRUCTOR CODE GOES HERE
+	PopSong(Ensemble ensemble, String title) {
+		this.mEnsemble = ensemble;
+		this.mTitle = title;
+		this.mYearReleased = 0;
+	}
+
 
 	/*
 	 * Full Song Constructor
@@ -27,6 +41,12 @@ class PopSong extends Song {
 	 * @param yearReleased the year the song was released
 	 */
 	// CONSTRUCTOR CODE GOES HERE
+	PopSong(Ensemble ensemble, String title, int yearReleased) {
+		this.mEnsemble = ensemble;
+		this.mTitle = title;
+		this.mYearReleased = yearReleased;
+		this.mWeeksOnBillboard = 0;
+	}
 
 	/*
 	 * Full PopSong Constructor
@@ -37,4 +57,10 @@ class PopSong extends Song {
 	 *		  				   Billboard's top 100
 	 */
 	// CONSTRUCTOR CODE GOES HERE
+	PopSong(Ensemble ensemble, String title, int yearReleased, int weeksOnBillboard) {
+		this.mEnsemble = ensemble;
+		this.mTitle = title;
+		this.mYearReleased = yearReleased;
+		this.mWeeksOnBillboard = weeksOnBillboard;
+	}
 }
