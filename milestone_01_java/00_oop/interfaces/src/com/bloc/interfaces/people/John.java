@@ -1,6 +1,8 @@
 package com.bloc.interfaces.people;
 
-public class John extends Person {
+import com.bloc.interfaces.people.hobbies.Driver;
+
+public class John extends Person implements Driver {
 	public John() {
 		super("John", "Smith", "Male", 1.7d, 69d, "Brown");
 	}
