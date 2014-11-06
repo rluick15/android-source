@@ -21,20 +21,11 @@ public class ImageGetter extends Thread {
 			if ("/".equals(System.getProperties().getProperty("file.separator"))) {
 				Runtime.getRuntime().exec("open google_logo.png");
 			} else {
-				Runtime.getRuntime().exec("google_logo.png");
+				Runtime.getRuntime().exec("mspaint google_logo.png");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-		File logo = new File("google_logo.png");
-		boolean exists = false;
-		try {
-			exists = logo.exists();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
