@@ -6,28 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 
 /**
  * Created by Rich on 11/10/2014.
  */
 public class NoteFragment extends Fragment {
-    public NoteFragment() {
-
-    }
+    public NoteFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_note, container, false);
 
-        RelativeLayout relativeLayout = new RelativeLayout(getActivity());
+        EditText editText = (EditText) rootView.findViewById(R.id.editText);
 
-        EditText editText = new EditText(getActivity());
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        relativeLayout.addView(editText, params);
-
-        return relativeLayout;
+        return rootView;
     }
 }
