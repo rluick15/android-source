@@ -11,14 +11,25 @@ import android.widget.EditText;
  * Created by Rich on 11/10/2014.
  */
 public class NoteFragment extends Fragment {
-    public NoteFragment() {}
+
+    protected EditText mEditText;
+    protected static final String TEXT = "text";
+
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(TEXT, mEditText.getText().toString());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_note, container, false);
 
-        EditText editText = (EditText) rootView.findViewById(R.id.editText);
+        mEditText = (EditText) rootView.findViewById(R.id.editText);
+        if (savedInstanceState != null) {
+            mEditText.setText(savedInstanceState.getString(TEXT));
+        }
 
         return rootView;
     }
