@@ -109,6 +109,9 @@ public class BlocNotes extends FragmentActivity
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.action_settings) {
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
