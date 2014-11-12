@@ -13,5 +13,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_erase">ERASE</string>
     <string name="action_add_notebook">ADD NOTEBOOK</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_custom_style">CUSTOM STYLE</string>
 
 </resources>

@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class BlocNotes extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class BlocNotes extends FragmentActivity implements CustomStyleDialogFragment.OnFragmentInteractionListener,
+        NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -109,11 +109,22 @@ public class BlocNotes extends FragmentActivity
         if (id == R.id.action_settings) {
             return true;
         }
-        if (id == R.id.action_settings) {
-
+        if (id == R.id.action_custom_style) {
+            FragmentManager fm = getSupportFragmentManager();
+            CustomStyleDialogFragment customStyleDialogFragment = new CustomStyleDialogFragment();
+            customStyleDialogFragment.show(fm, "dialog");
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {}
+
+    @Override
+    public void onFontChange(CustomStyleDialogFragment dialog, String fontName) {}
+
+    @Override
+    public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
 
     /**
      * A placeholder fragment containing a simple view.
