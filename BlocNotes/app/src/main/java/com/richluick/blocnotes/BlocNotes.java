@@ -120,8 +120,18 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     @Override
     public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {}
 
+    /**
+     * This method changes the typeface on the NoteFragment based on the users choice in the
+     * spinner from the custom dialog.
+     *
+     * @param dialog instance of CustomeStyleDialog the user opened to change the font
+     * @param fontName the name of the font the user selected
+     * @return void
+     * */
     @Override
-    public void onFontChange(CustomStyleDialogFragment dialog, String fontName) {}
+    public void onFontChange(CustomStyleDialogFragment dialog, String fontName) {
+        mNoteFragment.setCustomFont(fontName);
+    }
 
     @Override
     public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
@@ -147,9 +157,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             fragment.setArguments(args);
             return fragment;
         }
-
-        public PlaceholderFragment() {
-        }
+        public PlaceholderFragment() {}
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,

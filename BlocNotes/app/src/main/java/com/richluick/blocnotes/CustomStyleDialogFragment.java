@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -23,37 +24,10 @@ import android.widget.Spinner;
 public class CustomStyleDialogFragment extends DialogFragment {
 
     private Spinner mSpinnerFont;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private String mCustomFont;
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param
-     * @param
-     * @return A new instance of fragment CustomStyleDialogFragment.
-     */
-//    // TODO: Rename and change types and number of parameters
-//    public static CustomStyleDialogFragment newInstance(String param1, String param2) {
-//        CustomStyleDialogFragment fragment = new CustomStyleDialogFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-
-    public CustomStyleDialogFragment() {}
+    public CustomStyleDialogFragment() {} //required empty constructor
 
     @Override
     public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
@@ -64,12 +38,22 @@ public class CustomStyleDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_custom_style_dialog, container, false);
         getDialog().setTitle(getString(R.string.customize_style_dialog_title)); //set the dialog title
 
-        //Create the font spinner and array adapter for the choices
+        //Create the font spinner and array adapter for the custom font choices
         mSpinnerFont = (Spinner) view.findViewById(R.id.spinnerFont);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.font_spinner_array, android.R.layout.simple_spinner_item);
+                R.array.font_spinner_array, android.R.layout.simple_list_item_1);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinnerFont.setAdapter(arrayAdapter);
+
+        mSpinnerFont.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mCustomFont = adapterView.getItemAtPosition(i).toString();
+                ((BlocNotes) getActivity()).onFontChange(null, mCustomFont);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
 
         return view;
     }
