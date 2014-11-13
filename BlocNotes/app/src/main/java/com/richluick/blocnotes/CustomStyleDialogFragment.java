@@ -7,7 +7,8 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 
 /**
@@ -20,6 +21,9 @@ import android.view.ViewGroup;
  *
  */
 public class CustomStyleDialogFragment extends DialogFragment {
+
+    private Spinner mSpinnerFont;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -52,14 +56,20 @@ public class CustomStyleDialogFragment extends DialogFragment {
     public CustomStyleDialogFragment() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_custom_style_dialog, container, false);
+        getDialog().setTitle(getString(R.string.customize_style_dialog_title)); //set the dialog title
+
+        //Create the font spinner and array adapter for the choices
+        mSpinnerFont = (Spinner) view.findViewById(R.id.spinnerFont);
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.font_spinner_array, android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerFont.setAdapter(arrayAdapter);
 
         return view;
     }
