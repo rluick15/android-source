@@ -9,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 
@@ -26,9 +27,10 @@ public class CustomStyleDialogFragment extends DialogFragment {
 
     private Spinner mSpinnerFont;
     private String mCustomFont;
-    private Button mSmallFont;
-    private Button mMediumFont;
-    private Button mLargeFont;
+    private RadioGroup mFontSizeSelect;
+    private RadioButton mSmallFont;
+    private RadioButton mMediumFont;
+    private RadioButton mLargeFont;
     private OnFragmentInteractionListener mListener;
 
     //setup constant integer values to represent font sizes for when the user picks a custom font
@@ -57,32 +59,30 @@ public class CustomStyleDialogFragment extends DialogFragment {
     }
 
     /**
-     * This method sets up the buttons for the custom font size and reacts when a button is clicked
+     * This method sets up the radio buttons for the custom font size and reacts when a
+     * button is clicked.
      *
      * @param view The inflated view that the Spinner is placed in
      * @return void
      * */
     private void customFontStyle(View view) {
-        mSmallFont = (Button) view.findViewById(R.id.buttonSmallFont);
-        mMediumFont = (Button) view.findViewById(R.id.buttonMediumFont);
-        mLargeFont = (Button) view.findViewById(R.id.buttonLargeFont);
+        mFontSizeSelect = (RadioGroup) view.findViewById(R.id.fontSize);
+        mSmallFont = (RadioButton) view.findViewById(R.id.buttonSmallFont);
+        mMediumFont = (RadioButton) view.findViewById(R.id.buttonMediumFont);
+        mLargeFont = (RadioButton) view.findViewById(R.id.buttonLargeFont);
 
-        mSmallFont.setOnClickListener(new View.OnClickListener() {
+        mFontSizeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                ((BlocNotes) getActivity()).onStyleChange(null, SMALL_FONT);
-            }
-        });
-        mMediumFont.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((BlocNotes) getActivity()).onStyleChange(null, MEDIUM_FONT);
-            }
-        });
-        mLargeFont.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((BlocNotes) getActivity()).onStyleChange(null, LARGE_FONT);
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == R.id.buttonSmallFont) {
+                    ((BlocNotes) getActivity()).onStyleChange(null, SMALL_FONT);
+                }
+                else if (i == R.id.buttonMediumFont) {
+                    ((BlocNotes) getActivity()).onStyleChange(null, MEDIUM_FONT);
+                }
+                else if (i == R.id.buttonLargeFont) {
+                    ((BlocNotes) getActivity()).onStyleChange(null, LARGE_FONT);
+                }
             }
         });
     }
