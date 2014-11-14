@@ -17,10 +17,11 @@ import android.widget.EditText;
 public class NoteFragment extends Fragment {
 
     public EditText mEditText;
-    protected static final String TEXT = "text";
     private Typeface mHelvetica;
     private Typeface mHelveticaNeue;
     private Typeface mImpact;
+
+    private static final String TEXT = "text";
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -77,6 +78,24 @@ public class NoteFragment extends Fragment {
         }
         else {
             mEditText.setTypeface(Typeface.DEFAULT);
+        }
+    }
+
+    /**
+     * This is a setter method for setting the font style the user has selected from custom menu
+     *
+     * param styleId the integer id of the font stlye selected (SMALL, MEDIUM, LARGE)
+     * @return void
+     * */
+    public void setCustomStyle(int styleId) {
+        if(styleId == 1) {
+            mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Small);
+        }
+        else if(styleId == 2) {
+            mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Medium);
+        }
+        else if(styleId == 3) {
+            mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Large);
         }
     }
 

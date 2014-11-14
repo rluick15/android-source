@@ -5,15 +5,9 @@
         android:icon="@android:drawable/ic_menu_view"
         android:title="@string/action_custom_style"
         android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
     <item android:id="@+id/action_erase"
+        android:icon="@drawable/ic_menu_cut"
         android:title="@string/action_erase"
-        android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_example"
-        android:title="@string/action_example"
-        android:showAsAction="withText|ifRoom" />
+        android:showAsAction="ifRoom" /> />
 
 </menu>

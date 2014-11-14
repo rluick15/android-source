@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 
@@ -25,7 +26,15 @@ public class CustomStyleDialogFragment extends DialogFragment {
 
     private Spinner mSpinnerFont;
     private String mCustomFont;
+    private Button mSmallFont;
+    private Button mMediumFont;
+    private Button mLargeFont;
     private OnFragmentInteractionListener mListener;
+
+    //setup constant integer values to represent font sizes for when the user picks a custom font
+    private static final int SMALL_FONT = 1;
+    private static final int MEDIUM_FONT = 2;
+    private static final int LARGE_FONT = 3;
 
     public CustomStyleDialogFragment() {} //required empty constructor
 
@@ -39,6 +48,53 @@ public class CustomStyleDialogFragment extends DialogFragment {
         getDialog().setTitle(getString(R.string.customize_style_dialog_title)); //set the dialog title
 
         //Create the font spinner and array adapter for the custom font choices
+        customTypeface(view);
+
+        //Set up the onClickListeners for choosing the font size in the following lines
+        customFontStyle(view);
+
+        return view;
+    }
+
+    /**
+     * This method sets up the buttons for the custom font size and reacts when a button is clicked
+     *
+     * @param view The inflated view that the Spinner is placed in
+     * @return void
+     * */
+    private void customFontStyle(View view) {
+        mSmallFont = (Button) view.findViewById(R.id.buttonSmallFont);
+        mMediumFont = (Button) view.findViewById(R.id.buttonMediumFont);
+        mLargeFont = (Button) view.findViewById(R.id.buttonLargeFont);
+
+        mSmallFont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocNotes) getActivity()).onStyleChange(null, SMALL_FONT);
+            }
+        });
+        mMediumFont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocNotes) getActivity()).onStyleChange(null, MEDIUM_FONT);
+            }
+        });
+        mLargeFont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((BlocNotes) getActivity()).onStyleChange(null, LARGE_FONT);
+            }
+        });
+    }
+
+    /**
+     * This method sets up the spinner to hold a list of custom fonts the user can pick from and
+     * reacts when a spinner item is clicks
+     *
+     * @param view The inflated view that the Spinner is placed in
+     * @return void
+     * */
+    private void customTypeface(View view) {
         mSpinnerFont = (Spinner) view.findViewById(R.id.spinnerFont);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.font_spinner_array, android.R.layout.simple_list_item_1);
@@ -54,8 +110,6 @@ public class CustomStyleDialogFragment extends DialogFragment {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
-
-        return view;
     }
 
     @Override

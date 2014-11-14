@@ -106,9 +106,6 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if (id == R.id.action_custom_style) {
             FragmentManager fm = getSupportFragmentManager();
             CustomStyleDialogFragment customStyleDialogFragment = new CustomStyleDialogFragment();
@@ -118,7 +115,9 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     }
 
     @Override
-    public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {}
+    public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {
+        mNoteFragment.setCustomStyle(styleId);
+    }
 
     /**
      * This method changes the typeface on the NoteFragment based on the users choice in the
