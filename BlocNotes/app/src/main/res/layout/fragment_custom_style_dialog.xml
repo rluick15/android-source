@@ -33,7 +33,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:padding="@dimen/customize_button_padding"/>
+        android:background="@drawable/fancy_button"/>
 
     <Button
         android:id="@+id/buttonMediumFont"
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:padding="@dimen/customize_button_padding"/>
+        android:background="@drawable/fancy_button"/>
 
     <Button
         android:id="@+id/buttonLargeFont"
@@ -55,6 +55,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:padding="@dimen/customize_button_padding"/>
+        android:background="@drawable/fancy_button"/>
 
 </RelativeLayout>
