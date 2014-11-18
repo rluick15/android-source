@@ -3,6 +3,7 @@ package com.richluick.blocnotes;
 import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,18 +29,6 @@ public class NoteFragment extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(TEXT, mEditText.getText().toString());
     }
-
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState){
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        mEditText = (EditText) getActivity().findViewById(R.id.editText);
-//        if (savedInstanceState != null) {
-//            mEditText.setText(savedInstanceState.getString(TEXT));
-//        }
-//    }
-
-    //Try onRestoreInstanceState
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,18 +56,20 @@ public class NoteFragment extends Fragment {
      * @return void
      * */
     public void setCustomFont(String fontName) {
-        if(fontName.equals("Helvetica")) {
-            mEditText.setTypeface(mHelvetica);
-        }
-        else if(fontName.equals("Helvetica-Neue")) {
-            mEditText.setTypeface(mHelveticaNeue);
-        }
-        else if(fontName.equals("Impact")) {
-            mEditText.setTypeface(mImpact);
-        }
-        else {
-            mEditText.setTypeface(Typeface.DEFAULT);
-        }
+        //if(mEditText != null) {
+            if (fontName.equals("Helvetica")) {
+                mEditText.setTypeface(mHelvetica);
+            }
+            else if (fontName.equals("Helvetica-Neue")) {
+                mEditText.setTypeface(mHelveticaNeue);
+            }
+            else if (fontName.equals("Impact")) {
+                mEditText.setTypeface(mImpact);
+            }
+            else {
+                mEditText.setTypeface(Typeface.DEFAULT);
+            }
+        //}
     }
 
     /**
@@ -88,15 +79,17 @@ public class NoteFragment extends Fragment {
      * @return void
      * */
     public void setCustomStyle(int styleId) {
-        if(styleId == 1) {
-            mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Small);
-        }
-        else if(styleId == 2) {
-            mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Medium);
-        }
-        else if(styleId == 3) {
-            mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Large);
-        }
+        //if(mEditText != null) {
+            if (styleId == 1) {
+                mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Small);
+            }
+            else if (styleId == 2) {
+                mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Medium);
+            }
+            else if (styleId == 3) {
+                mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Large);
+            }
+        //}
     }
 
     @Override

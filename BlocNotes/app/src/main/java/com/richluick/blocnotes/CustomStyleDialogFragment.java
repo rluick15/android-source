@@ -2,6 +2,7 @@ package com.richluick.blocnotes;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
@@ -25,12 +25,7 @@ import android.widget.Spinner;
  */
 public class CustomStyleDialogFragment extends DialogFragment {
 
-    private Spinner mSpinnerFont;
     private String mCustomFont;
-    private RadioGroup mFontSizeSelect;
-    private RadioButton mSmallFont;
-    private RadioButton mMediumFont;
-    private RadioButton mLargeFont;
     private OnFragmentInteractionListener mListener;
 
     //setup constant integer values to represent font sizes for when the user picks a custom font
@@ -49,11 +44,15 @@ public class CustomStyleDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_custom_style_dialog, container, false);
         getDialog().setTitle(getString(R.string.customize_style_dialog_title)); //set the dialog title
 
+        //setup shared preferences for Custom Settings
+        SharedPreferences sharedPrefs = getActivity().getPreferences(0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
         //Create the font spinner and array adapter for the custom font choices
-        customTypeface(view);
+        customTypeface(view, editor);
 
         //Set up the onClickListeners for choosing the font size in the following lines
-        customFontStyle(view);
+        customFontStyle(view, editor);
 
         return view;
     }
@@ -63,24 +62,26 @@ public class CustomStyleDialogFragment extends DialogFragment {
      * button is clicked.
      *
      * @param view The inflated view that the Spinner is placed in
-     * @return void
+     * @param editor To store the value in SharedPreferences
      * */
-    private void customFontStyle(View view) {
-        mFontSizeSelect = (RadioGroup) view.findViewById(R.id.fontSize);
-        mSmallFont = (RadioButton) view.findViewById(R.id.buttonSmallFont);
-        mMediumFont = (RadioButton) view.findViewById(R.id.buttonMediumFont);
-        mLargeFont = (RadioButton) view.findViewById(R.id.buttonLargeFont);
-
-        mFontSizeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+    private void customFontStyle(View view, final SharedPreferences.Editor editor) {
+        RadioGroup fontSizeSelect = (RadioGroup) view.findViewById(R.id.fontSize);
+        fontSizeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if (i == R.id.buttonSmallFont) {
+                    editor.putInt(SharedPreferanceConstants.PREF_FONT_SIZE, SMALL_FONT);
+                    editor.apply();
                     ((BlocNotes) getActivity()).onStyleChange(null, SMALL_FONT);
                 }
                 else if (i == R.id.buttonMediumFont) {
+                    editor.putInt(SharedPreferanceConstants.PREF_FONT_SIZE, MEDIUM_FONT);
+                    editor.apply();
                     ((BlocNotes) getActivity()).onStyleChange(null, MEDIUM_FONT);
                 }
                 else if (i == R.id.buttonLargeFont) {
+                    editor.putInt(SharedPreferanceConstants.PREF_FONT_SIZE, LARGE_FONT);
+                    editor.apply();
                     ((BlocNotes) getActivity()).onStyleChange(null, LARGE_FONT);
                 }
             }
@@ -92,23 +93,28 @@ public class CustomStyleDialogFragment extends DialogFragment {
      * reacts when a spinner item is clicks
      *
      * @param view The inflated view that the Spinner is placed in
+     * @param editor To store the value in SharedPreferences
      * @return void
      * */
-    private void customTypeface(View view) {
-        mSpinnerFont = (Spinner) view.findViewById(R.id.spinnerFont);
+    private void customTypeface(View view, final SharedPreferences.Editor editor) {
+        Spinner spinnerFont = (Spinner) view.findViewById(R.id.spinnerFont);
         ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.font_spinner_array, android.R.layout.simple_list_item_1);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinnerFont.setAdapter(arrayAdapter);
+        spinnerFont.setAdapter(arrayAdapter);
 
-        mSpinnerFont.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerFont.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mCustomFont = adapterView.getItemAtPosition(i).toString();
+                editor.putString(SharedPreferanceConstants.PREF_TYPEFACE, mCustomFont);
+                editor.apply();
                 ((BlocNotes) getActivity()).onFontChange(null, mCustomFont);
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
     }
 
