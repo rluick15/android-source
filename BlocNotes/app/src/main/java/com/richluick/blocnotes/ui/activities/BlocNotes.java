@@ -1,4 +1,4 @@
-package com.richluick.blocnotes;
+package com.richluick.blocnotes.ui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -14,6 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.ui.fragments.CustomStyleDialogFragment;
+import com.richluick.blocnotes.ui.fragments.NavigationDrawerFragment;
+import com.richluick.blocnotes.ui.fragments.NoteFragment;
+import com.richluick.blocnotes.ui.fragments.SettingsFragment;
+import com.richluick.blocnotes.utils.SharedPreferanceConstants;
 
 
 public class BlocNotes extends FragmentActivity implements CustomStyleDialogFragment.OnFragmentInteractionListener,
@@ -52,8 +59,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         //create a new note fragment if one has not been created yet
         try {
             mNoteFragment = (NoteFragment) getFragmentManager().findFragmentById(R.id.container);
-        }
-        catch(ClassCastException e) {}
+        } catch(ClassCastException e) {}
         if (mNoteFragment == null) {
             mNoteFragment = new NoteFragment();
             getFragmentManager().beginTransaction().replace(R.id.container, mNoteFragment).commit();

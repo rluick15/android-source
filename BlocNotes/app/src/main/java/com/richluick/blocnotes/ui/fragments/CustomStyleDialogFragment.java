@@ -1,4 +1,4 @@
-package com.richluick.blocnotes;
+package com.richluick.blocnotes.ui.fragments;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -11,6 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+
+import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.ui.activities.BlocNotes;
+import com.richluick.blocnotes.utils.SharedPreferanceConstants;
 
 
 /**

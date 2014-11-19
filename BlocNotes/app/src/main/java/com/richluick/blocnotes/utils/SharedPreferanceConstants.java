@@ -1,4 +1,4 @@
-package com.richluick.blocnotes;
+package com.richluick.blocnotes.utils;
 
 /**
  * Created by Rich on 11/17/2014.

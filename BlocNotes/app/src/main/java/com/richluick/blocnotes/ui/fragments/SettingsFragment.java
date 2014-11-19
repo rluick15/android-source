@@ -1,7 +1,9 @@
-package com.richluick.blocnotes;
+package com.richluick.blocnotes.ui.fragments;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+
+import com.richluick.blocnotes.R;
 
 
 /**

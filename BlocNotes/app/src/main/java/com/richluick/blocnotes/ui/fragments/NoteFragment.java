@@ -1,4 +1,4 @@
-package com.richluick.blocnotes;
+package com.richluick.blocnotes.ui.fragments;
 
 import android.app.Fragment;
 import android.graphics.Typeface;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.ui.activities.BlocNotes;
 
 /**
  * Created by Rich on 11/10/2014.
