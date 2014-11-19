@@ -1,7 +1,6 @@
 package com.richluick.blocnotes;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -15,13 +14,7 @@ import android.widget.Spinner;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CustomStyleDialogFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CustomStyleDialogFragment#} factory method to
- * create an instance of this fragment.
- *
+ * This fragment display the application options in a dialog
  */
 public class CustomStyleDialogFragment extends DialogFragment {
 
@@ -94,7 +87,6 @@ public class CustomStyleDialogFragment extends DialogFragment {
      *
      * @param view The inflated view that the Spinner is placed in
      * @param editor To store the value in SharedPreferences
-     * @return void
      * */
     private void customTypeface(View view, final SharedPreferences.Editor editor) {
         Spinner spinnerFont = (Spinner) view.findViewById(R.id.spinnerFont);

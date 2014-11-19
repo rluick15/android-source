@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -45,24 +46,70 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     }
 
     @Override
-    protected void onStart() {
+     protected void onStart() {
         super.onStart();
 
         //create a new note fragment if one has not been created yet
-        mNoteFragment = (NoteFragment) getFragmentManager().findFragmentById(R.id.container);
+        try {
+            mNoteFragment = (NoteFragment) getFragmentManager().findFragmentById(R.id.container);
+        }
+        catch(ClassCastException e) {}
         if (mNoteFragment == null) {
             mNoteFragment = new NoteFragment();
             getFragmentManager().beginTransaction().replace(R.id.container, mNoteFragment).commit();
             getFragmentManager().executePendingTransactions();
         }
 
-        //restore SharedPreferences
+        //set user selected SharedPreferences or default settings if never set
         SharedPreferences sharedPrefs = getPreferences(0);
         int stylePref = sharedPrefs.getInt(SharedPreferanceConstants.PREF_FONT_SIZE, 2);
         String fontPref = sharedPrefs.getString(SharedPreferanceConstants.PREF_TYPEFACE, "");
         onStyleChange(null , stylePref);
         onFontChange(null, fontPref);
+
+        setSharedPrefs();
     }
+
+    /**
+     * This method sets the shared prefs based on the default preferences designated by the user
+     * in the SettingsFragment. It is called onCreate of the Main Activity and also from the
+     * onResumeMethod in the NoteFragment. This allows for an immediate setting change when the
+     * user returns from the settings fragment to the NoteFragment.
+     * */
+    public void setSharedPrefs() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String fontPreference = sharedPreferences.getString(SharedPreferanceConstants.PREF_TYPEFACE, "");
+        int stylePreference = Integer.parseInt(sharedPreferences.getString(SharedPreferanceConstants.PREF_FONT_SIZE, "2"));
+        onStyleChange(null , stylePreference);
+        onFontChange(null, fontPreference);
+    }
+
+    /**
+     * This method changes the typeface on the NoteFragment based on the users choice in the
+     * spinner from the custom dialog.
+     *
+     * @param dialog instance of CustomStyleDialog the user opened to change the font size
+     * @param styleId the int id value corresponding to a font size
+     * */
+    @Override
+    public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {
+        mNoteFragment.setCustomStyle(styleId);
+    }
+
+    /**
+     * This method changes the typeface on the NoteFragment based on the users choice in the
+     * spinner from the custom dialog.
+     *
+     * @param dialog instance of CustomeStyleDialog the user opened to change the font
+     * @param fontName the name of the font the user selected
+     * */
+    @Override
+    public void onFontChange(CustomStyleDialogFragment dialog, String fontName) {
+        mNoteFragment.setCustomFont(fontName);
+    }
+
+    @Override
+    public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -125,35 +172,28 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             CustomStyleDialogFragment customStyleDialogFragment = new CustomStyleDialogFragment();
             customStyleDialogFragment.show(fm, "dialog");
         }
+        if (id == R.id.action_settings) {
+            SettingsFragment settingsFragment = new SettingsFragment();
+            getFragmentManager().beginTransaction().replace(R.id.container, settingsFragment)
+                    .addToBackStack(null).commit();
+        }
         return super.onOptionsItemSelected(item);
     }
 
     /**
-     * This method changes the typeface on the NoteFragment based on the users choice in the
-     * spinner from the custom dialog.
-     *
-     * @param dialog instance of CustomStyleDialog the user opened to change the font size
-     * @param styleId the int id value corresponding to a font size
-     * */
+     * This method is used to handle back button presses on Fragments
+     */
     @Override
-    public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {
-        mNoteFragment.setCustomStyle(styleId);
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0 ){
+            getFragmentManager().popBackStack();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
-    /**
-     * This method changes the typeface on the NoteFragment based on the users choice in the
-     * spinner from the custom dialog.
-     *
-     * @param dialog instance of CustomeStyleDialog the user opened to change the font
-     * @param fontName the name of the font the user selected
-     * */
-    @Override
-    public void onFontChange(CustomStyleDialogFragment dialog, String fontName) {
-        mNoteFragment.setCustomFont(fontName);
-    }
 
-    @Override
-    public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
 
     /**
      * A placeholder fragment containing a simple view.
@@ -187,9 +227,9 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
 
         @Override
         public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((BlocNotes) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+        super.onAttach(activity);
+        ((BlocNotes) activity).onSectionAttached(
+                getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
 

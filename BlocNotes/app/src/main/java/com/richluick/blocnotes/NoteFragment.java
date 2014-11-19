@@ -3,11 +3,7 @@ package com.richluick.blocnotes;
 import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -38,7 +34,7 @@ public class NoteFragment extends Fragment {
         //restore state of app when activity is destroyed and restarted
         mEditText = (EditText) rootView.findViewById(R.id.editText);
         if (savedInstanceState != null) {
-            mEditText.setText(savedInstanceState.getString(TEXT));
+            setNoteText(savedInstanceState.getString(TEXT));
         }
 
         //Store the font assets as variables
@@ -49,6 +45,25 @@ public class NoteFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //set the new shared preferences when returning from the Settings Fragment
+        ((BlocNotes) getActivity()).setSharedPrefs();
+    }
+
+    /**
+     * This is a setter method for setting the text to restore from savedInstanceState, to set it
+     * to blank if the user clicks the erase option, or to generally change the text from outside
+     * the fragment
+     *
+     * param text the String to insert into the EditText on the Note Fragment
+     * */
+    public void setNoteText(String text) {
+        mEditText.setText(text);
+    }
+
     /**
      * This is a setter method for setting the font the user has selected from the spinner
      *
@@ -56,7 +71,7 @@ public class NoteFragment extends Fragment {
      * @return void
      * */
     public void setCustomFont(String fontName) {
-        //if(mEditText != null) {
+        if(mEditText != null) {
             if (fontName.equals("Helvetica")) {
                 mEditText.setTypeface(mHelvetica);
             }
@@ -69,7 +84,7 @@ public class NoteFragment extends Fragment {
             else {
                 mEditText.setTypeface(Typeface.DEFAULT);
             }
-        //}
+        }
     }
 
     /**
@@ -79,7 +94,7 @@ public class NoteFragment extends Fragment {
      * @return void
      * */
     public void setCustomStyle(int styleId) {
-        //if(mEditText != null) {
+        if(mEditText != null) {
             if (styleId == 1) {
                 mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Small);
             }
@@ -89,24 +104,8 @@ public class NoteFragment extends Fragment {
             else if (styleId == 3) {
                 mEditText.setTextAppearance(getActivity(), android.R.style.TextAppearance_Large);
             }
-        //}
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        super.onCreateOptionsMenu(menu, inflater);
-
-        inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.bloc_notes, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_erase) {
-            mEditText.setText("");
         }
-        return super.onOptionsItemSelected(item);
     }
+
+    //TODO: Only make erase and settings appear when this fragment is up
 }

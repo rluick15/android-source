@@ -6,4 +6,14 @@
         <item>Helvetica-Neue</item>
         <item>Impact</item>
     </string-array>
+    <string-array name="font_size_array">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+    <string-array name="font_size_value_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

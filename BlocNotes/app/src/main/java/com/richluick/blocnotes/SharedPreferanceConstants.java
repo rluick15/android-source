@@ -5,7 +5,7 @@ package com.richluick.blocnotes;
  */
 public class SharedPreferanceConstants {
 
-    public static final String PREF_TYPEFACE = "typeface";
-    public static final String PREF_FONT_SIZE = "fontSize";
+    public static final String PREF_TYPEFACE = "font_preference";
+    public static final String PREF_FONT_SIZE = "font_size_preference";
 
 }
