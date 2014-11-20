@@ -14,6 +14,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class BlocNotesDbHelper extends SQLiteOpenHelper {
+
+    //private static BlocNotesDbHelper mInstance = null;
+
     // Version
     private static final int DATABASE_VERSION = 1;
     // Name
@@ -27,6 +30,13 @@ public class BlocNotesDbHelper extends SQLiteOpenHelper {
         sTables.add(new NotesTable());
         sTables.add(new NotebooksTable());
     }
+
+//    public static BlocNotesDbHelper getInstance(Context context) {
+//        if(mInstance == null) {
+//            mInstance = new BlocNotesDbHelper(context.getApplicationContext());
+//        }
+//        return mInstance;
+//    }
 
     public BlocNotesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
