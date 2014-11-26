@@ -3,6 +3,7 @@ package com.richluick.blocnotes.ui.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -14,23 +15,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 
 import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.ui.fragments.AddNotebookFragment;
 import com.richluick.blocnotes.ui.fragments.CustomStyleDialogFragment;
 import com.richluick.blocnotes.ui.fragments.NavigationDrawerFragment;
-import com.richluick.blocnotes.ui.fragments.NoteFragment;
+import com.richluick.blocnotes.ui.fragments.NoteBookFragment;
 import com.richluick.blocnotes.ui.fragments.SettingsFragment;
-import com.richluick.blocnotes.utils.SharedPreferanceConstants;
+import com.richluick.blocnotes.utils.Constants;
 
 
 public class BlocNotes extends FragmentActivity implements CustomStyleDialogFragment.OnFragmentInteractionListener,
-        NavigationDrawerFragment.NavigationDrawerCallbacks {
+        NavigationDrawerFragment.NavigationDrawerCallbacks, AddNotebookFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private NoteFragment mNoteFragment;
+    private NoteBookFragment mNoteBookFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -44,7 +47,6 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -58,22 +60,31 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
 
         //create a new note fragment if one has not been created yet
         try {
-            mNoteFragment = (NoteFragment) getFragmentManager().findFragmentById(R.id.container);
+            setmNoteBookFragment();
         } catch(ClassCastException e) {}
-        if (mNoteFragment == null) {
-            mNoteFragment = new NoteFragment();
-            getFragmentManager().beginTransaction().replace(R.id.container, mNoteFragment).commit();
+        if (mNoteBookFragment == null) {
+            mNoteBookFragment = new NoteBookFragment(Constants.TABLE_NOTEBOOKS_UNCATEGORIZED, 0);
+            getFragmentManager().beginTransaction().replace(R.id.container, mNoteBookFragment).commit();
             getFragmentManager().executePendingTransactions();
         }
 
         //set user selected SharedPreferences or default settings if never set
         SharedPreferences sharedPrefs = getPreferences(0);
-        int stylePref = sharedPrefs.getInt(SharedPreferanceConstants.PREF_FONT_SIZE, 2);
-        String fontPref = sharedPrefs.getString(SharedPreferanceConstants.PREF_TYPEFACE, "");
+        int stylePref = sharedPrefs.getInt(Constants.PREF_FONT_SIZE, 2);
+        String fontPref = sharedPrefs.getString(Constants.PREF_TYPEFACE, "");
         onStyleChange(null , stylePref);
         onFontChange(null, fontPref);
 
         setSharedPrefs();
+    }
+
+    /**
+     * This method sets the variable mNoteBookFragment to hold the current Notebook fragment
+     * being displayed on the screen. It is called onCreate of the Main Activity as well as from
+     * the fragments onCreateView to ensure it is changed upon opening of the new fragment
+     * */
+    public void setmNoteBookFragment() {
+        mNoteBookFragment = (NoteBookFragment) getFragmentManager().findFragmentById(R.id.container);
     }
 
     /**
@@ -84,9 +95,9 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
      * */
     public void setSharedPrefs() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String fontPreference = sharedPreferences.getString(SharedPreferanceConstants.PREF_TYPEFACE, "");
-        int stylePreference = Integer.parseInt(sharedPreferences.getString(SharedPreferanceConstants.PREF_FONT_SIZE, "2"));
-        onStyleChange(null , stylePreference);
+        String fontPreference = sharedPreferences.getString(Constants.PREF_TYPEFACE, "");
+        int stylePreference = Integer.parseInt(sharedPreferences.getString(Constants.PREF_FONT_SIZE, "2"));
+        onStyleChange(null, stylePreference);
         onFontChange(null, fontPreference);
     }
 
@@ -99,7 +110,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
      * */
     @Override
     public void onStyleChange(CustomStyleDialogFragment dialog, int styleId) {
-        mNoteFragment.setCustomStyle(styleId);
+        mNoteBookFragment.setCustomStyle(styleId);
     }
 
     /**
@@ -111,11 +122,16 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
      * */
     @Override
     public void onFontChange(CustomStyleDialogFragment dialog, String fontName) {
-        mNoteFragment.setCustomFont(fontName);
+        mNoteBookFragment.setCustomFont(fontName);
     }
 
     @Override
     public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
+
+    @Override
+    public void onDatabaseUpdate(String newTitle) {
+        mNavigationDrawerFragment.updateDatabase(newTitle);
+    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -127,22 +143,17 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-            case 4:
-                mTitle = getString(R.string.title_section4);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_section5);
-                break;
+        if(mNavigationDrawerFragment != null) {
+            int adjustedNumber = number - 1;
+            SimpleCursorAdapter cursorAdapter = mNavigationDrawerFragment.getCursorAdapter();
+            Cursor cursor = (Cursor) cursorAdapter.getItem(adjustedNumber);
+            String notebookName = cursor.getString(
+                    cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
+            mTitle = notebookName; //set the page title to the specific notebooks name
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new NoteBookFragment(notebookName, adjustedNumber))
+                    .commit();
         }
     }
 
@@ -178,6 +189,9 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             CustomStyleDialogFragment customStyleDialogFragment = new CustomStyleDialogFragment();
             customStyleDialogFragment.show(fm, "dialog");
         }
+        if (id == R.id.action_erase) {
+            mNoteBookFragment.setNewNoteText("");
+        }
         if (id == R.id.action_settings) {
             SettingsFragment settingsFragment = new SettingsFragment();
             getFragmentManager().beginTransaction().replace(R.id.container, settingsFragment)
@@ -198,7 +212,6 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             super.onBackPressed();
         }
     }
-
 
 
     /**

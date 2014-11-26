@@ -1,16 +1,21 @@
 package com.richluick.blocnotes.ui.fragments;
 
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,11 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.SimpleCursorAdapter;
 
+import com.richluick.blocnotes.BlocNotesApplication;
 import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.utils.Constants;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -30,6 +36,8 @@ import com.richluick.blocnotes.R;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+
+    private FragmentActivity mContext;
 
     /**
      * Remember the position of the selected item.
@@ -55,13 +63,13 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private SimpleCursorAdapter mCursorAdapter;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    public NavigationDrawerFragment() {
-    }
+    public NavigationDrawerFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +99,18 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+
+        //get the singleton database from the application class
+        SQLiteDatabase db = BlocNotesApplication.get(getActivity()).getReadableDb();
+        //db cursor query for Notebook names
+        Cursor cursor = getCursor(db);
+        //Simple cursor adapter for displaying notebook names in listview
+        mCursorAdapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_activated_1,
+                cursor,
+                new String[] {Constants.TABLE_COLUMN_NOTEBOOK_NAME},
+                new int[] {android.R.id.text1});
+
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -99,19 +119,35 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section4),
-                        getString(R.string.title_section5),
-                }));
+
+        mDrawerListView.setAdapter(mCursorAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        db.close();
+
         return mDrawerListView;
+    }
+
+    public SimpleCursorAdapter getCursorAdapter() {
+        return mCursorAdapter;
+    }
+
+    public void updateDatabase(String newTitle) {
+        SQLiteDatabase db = BlocNotesApplication.get(getActivity()).getWritableDb();
+        ContentValues values = new ContentValues();
+        values.put(Constants.TABLE_COLUMN_NOTEBOOK_NAME, newTitle);
+        db.insert(Constants.TABLE_NOTEBOOKS_NAME, null, values);
+
+        //get the new cursor and update and close the database
+        Cursor cursor = getCursor(db);
+        mCursorAdapter.changeCursor(cursor);
+        mCursorAdapter.notifyDataSetChanged();
+        db.close();
+    }
+
+    private Cursor getCursor(SQLiteDatabase db) {
+        return db.query(Constants.TABLE_NOTEBOOKS_NAME,
+                    new String[] {Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_NOTEBOOK_NAME},
+                    null, null, null, null, null, null);
     }
 
     public boolean isDrawerOpen() {
@@ -120,7 +156,6 @@ public class NavigationDrawerFragment extends Fragment {
 
     /**
      * Users of this fragment must call this method to set up the navigation drawer interactions.
-     *
      * @param fragmentId   The android:id of this fragment in its activity's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
@@ -208,6 +243,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        mContext = (FragmentActivity) activity;
         try {
             mCallbacks = (NavigationDrawerCallbacks) activity;
         } catch (ClassCastException e) {
@@ -250,10 +286,10 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         if (item.getItemId() == R.id.action_add_notebook) {
-            Toast.makeText(getActivity(), "Coming Soon!", Toast.LENGTH_LONG).show();
-            return true;
+            FragmentManager fm = mContext.getSupportFragmentManager();
+            AddNotebookFragment notebookFragment = new AddNotebookFragment();
+            notebookFragment.show(fm, "dialog");
         }
 
         return super.onOptionsItemSelected(item);

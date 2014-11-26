@@ -7,4 +7,5 @@
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="customize_button_padding">10dp</dimen>
+    <dimen name="note_adapter_padding">7dp</dimen>
 </resources>

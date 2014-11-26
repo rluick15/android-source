@@ -17,5 +17,8 @@
     <string name="action_custom_style">CUSTOM STYLE</string>
     <string name="customize_style_dialog_title">Customize</string>
     <string name="custom_font_size_header">Font Size</string>
+    <string name="new_notebook_create">Create</string>
+    <string name="new_notebook_cancel">Cancel</string>
+    <string name="create_notebook">Create Notebook</string>
 
 </resources>

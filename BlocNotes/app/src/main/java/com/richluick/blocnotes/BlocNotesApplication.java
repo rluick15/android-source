@@ -2,6 +2,7 @@ package com.richluick.blocnotes;
 
 import android.app.Application;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.richluick.blocnotes.database.BlocNotesDbHelper;
 
@@ -19,8 +20,12 @@ public class BlocNotesApplication extends Application {
         mDatabase = new BlocNotesDbHelper(getApplicationContext());
     }
 
-    public BlocNotesDbHelper getDatabase() {
-        return mDatabase;
+    public SQLiteDatabase getReadableDb() {
+        return mDatabase.getReadableDatabase();
+    }
+
+    public SQLiteDatabase getWritableDb() {
+        return mDatabase.getWritableDatabase();
     }
 
     public static BlocNotesApplication get(Context context) {

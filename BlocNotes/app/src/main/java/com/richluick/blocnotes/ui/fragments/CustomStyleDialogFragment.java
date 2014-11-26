@@ -14,7 +14,7 @@ import android.widget.Spinner;
 
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.ui.activities.BlocNotes;
-import com.richluick.blocnotes.utils.SharedPreferanceConstants;
+import com.richluick.blocnotes.utils.Constants;
 
 
 /**
@@ -67,17 +67,17 @@ public class CustomStyleDialogFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if (i == R.id.buttonSmallFont) {
-                    editor.putInt(SharedPreferanceConstants.PREF_FONT_SIZE, SMALL_FONT);
+                    editor.putInt(Constants.PREF_FONT_SIZE, SMALL_FONT);
                     editor.apply();
                     ((BlocNotes) getActivity()).onStyleChange(null, SMALL_FONT);
                 }
                 else if (i == R.id.buttonMediumFont) {
-                    editor.putInt(SharedPreferanceConstants.PREF_FONT_SIZE, MEDIUM_FONT);
+                    editor.putInt(Constants.PREF_FONT_SIZE, MEDIUM_FONT);
                     editor.apply();
                     ((BlocNotes) getActivity()).onStyleChange(null, MEDIUM_FONT);
                 }
                 else if (i == R.id.buttonLargeFont) {
-                    editor.putInt(SharedPreferanceConstants.PREF_FONT_SIZE, LARGE_FONT);
+                    editor.putInt(Constants.PREF_FONT_SIZE, LARGE_FONT);
                     editor.apply();
                     ((BlocNotes) getActivity()).onStyleChange(null, LARGE_FONT);
                 }
@@ -103,7 +103,7 @@ public class CustomStyleDialogFragment extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mCustomFont = adapterView.getItemAtPosition(i).toString();
-                editor.putString(SharedPreferanceConstants.PREF_TYPEFACE, mCustomFont);
+                editor.putString(Constants.PREF_TYPEFACE, mCustomFont);
                 editor.apply();
                 ((BlocNotes) getActivity()).onFontChange(null, mCustomFont);
             }
