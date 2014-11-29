@@ -19,11 +19,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import com.richluick.blocnotes.BlocNotesApplication;
 import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.adapters.NoteAdapter;
 import com.richluick.blocnotes.ui.fragments.AddNotebookFragment;
 import com.richluick.blocnotes.ui.fragments.CustomStyleDialogFragment;
+import com.richluick.blocnotes.ui.fragments.EditNoteFragment;
 import com.richluick.blocnotes.ui.fragments.NavigationDrawerFragment;
 import com.richluick.blocnotes.ui.fragments.NoteBookFragment;
 import com.richluick.blocnotes.ui.fragments.SettingsFragment;
@@ -31,7 +34,8 @@ import com.richluick.blocnotes.utils.Constants;
 
 
 public class BlocNotes extends FragmentActivity implements CustomStyleDialogFragment.OnFragmentInteractionListener,
-        NavigationDrawerFragment.NavigationDrawerCallbacks, AddNotebookFragment.OnFragmentInteractionListener {
+        NavigationDrawerFragment.NavigationDrawerCallbacks, AddNotebookFragment.OnFragmentInteractionListener,
+        NoteAdapter.OnNoteBookAdapterListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -232,6 +236,59 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
 
     @Override
     public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
+
+
+    @Override
+    public void editTextDialog(String noteText, String noteId) {
+        FragmentManager fm = getSupportFragmentManager();
+        EditNoteFragment editNoteFragment = new EditNoteFragment(noteText, noteId);
+        editNoteFragment.show(fm, "dialog");
+    }
+
+    public void updateDatabaseNewText(final String updatedNote, final String noteId) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                ContentValues values = new ContentValues();
+                values.put(Constants.TABLE_COLUMN_NOTES_BODY, updatedNote);
+                mDb.update(Constants.TABLE_NOTES_NAME, values,
+                        Constants.TABLE_COLUMN_ID + " = ?", new String[]{noteId});
+                final Cursor cursor = mNoteBookFragment.getCursor(mDb);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNoteBookFragment.refreshNoteList(cursor);
+                        Toast.makeText(BlocNotes.this,
+                                getString(R.string.update_note_toast), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }.start();
+    }
+
+    @Override
+    public void deleteNote(final String noteId) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                mDb.delete(Constants.TABLE_NOTES_NAME,
+                        Constants.TABLE_COLUMN_ID + " = ?", new String[]{noteId});
+                final Cursor cursor = mNoteBookFragment.getCursor(mDb);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNoteBookFragment.refreshNoteList(cursor);
+                        Toast.makeText(BlocNotes.this,
+                                getString(R.string.delete_note_toast), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }.start();
+    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {

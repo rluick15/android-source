@@ -38,7 +38,7 @@ public class AddNotebookFragment extends DialogFragment {
         getDialog().setTitle(getString(R.string.create_notebook)); //set the dialog title
 
         //Declare Resources
-        mNotebookTitle = (EditText) view.findViewById(R.id.newNotebookName);
+        mNotebookTitle = (EditText) view.findViewById(R.id.editNoteText);
         mCreate = (Button) view.findViewById(R.id.createButton);
         mCancel = (Button) view.findViewById(R.id.cancelButton);
 

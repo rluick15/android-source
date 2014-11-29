@@ -22,5 +22,13 @@
     <string name="create_notebook">Create Notebook</string>
     <string name="empty_string_list">This notebook is lonely!\n\nBegin typing above to create\nyour first note!</string>
     <string name="note_hint">Type your note here!</string>
+    <string name="update_note_button">Update Note</string>
+    <string name="update_note_cancel">Cancel</string>
+    <string name="title_update_note">Update Note</string>
+    <string name="delete_note_message">Are you sure you want to delete this note?</string>
+    <string name="delete_note_title">Delete Note</string>
+    <string name="delete_note_button_text">Delete</string>
+    <string name="delete_note_toast">Note Deleted!</string>
+    <string name="update_note_toast">Note Updated!</string>
 
 </resources>

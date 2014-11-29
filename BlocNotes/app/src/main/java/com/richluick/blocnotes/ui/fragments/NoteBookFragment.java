@@ -132,7 +132,7 @@ public class NoteBookFragment extends ListFragment {
      * param cursor The cursor object with the database query stored in it
      * */
     public void setNotebookAdapter(Cursor cursor) {
-        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater);
+        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater, mNotebookNumber);
         mNotesListView.setEmptyView(mEmptyView);
         mNotesListView.setAdapter(mNoteAdapter);
     }

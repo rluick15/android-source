@@ -2,31 +2,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.richluick.blocnotes.ui.fragments.AddNotebookFragment">
+    tools:context="com.richluick.blocnotes.ui.fragments.EditNoteFragment">
 
-    <TextView
-        android:id="@+id/notebookNameText"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notebook Name"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin" />
 
     <EditText
         android:id="@+id/editNoteText"
+        android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/notebookNameText"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
     <LinearLayout
-        android:layout_below="@+id/newNotebookName"
+        android:layout_below="@+id/editNoteText"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,8 +23,8 @@
         android:layout_alignParentStart="true">
 
         <Button
-            android:id="@+id/createButton"
-            android:text="@string/new_notebook_create"
+            android:id="@+id/editNoteButton"
+            android:text="@string/update_note_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -47,8 +36,8 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
 
         <Button
-            android:id="@+id/cancelButton"
-            android:text="@string/new_notebook_cancel"
+            android:id="@+id/editNoteCancel"
+            android:text="@string/update_note_cancel"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -58,6 +47,6 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"/>
-    </LinearLayout>
 
+    </LinearLayout>
 </RelativeLayout>
