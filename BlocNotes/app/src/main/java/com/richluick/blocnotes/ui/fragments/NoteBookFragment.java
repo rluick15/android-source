@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.adapters.NoteAdapter;
@@ -27,6 +29,8 @@ public class NoteBookFragment extends ListFragment {
     private static Typeface mHelveticaNeue;
     private static Typeface mImpact;
     private String mNewNoteText;
+    private ListView mNotesListView;
+    private TextView mEmptyView;
 
     //private SimpleCursorAdapter mCursorAdapter;
     private NoteAdapter mNoteAdapter;
@@ -87,7 +91,8 @@ public class NoteBookFragment extends ListFragment {
 //                new String[] {Constants.TABLE_COLUMN_NOTES_BODY},
 //                new int[] {R.id.noteText});
 //
-//        mNotesListView = (ListView) rootView.findViewById(android.R.id.list);
+        mNotesListView = (ListView) rootView.findViewById(android.R.id.list);
+        mEmptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
 //        mNotesListView.setAdapter(mCursorAdapter);
 
         return rootView;
@@ -128,7 +133,8 @@ public class NoteBookFragment extends ListFragment {
      * */
     public void setNotebookAdapter(Cursor cursor) {
         mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater);
-        setListAdapter(mNoteAdapter);
+        mNotesListView.setEmptyView(mEmptyView);
+        mNotesListView.setAdapter(mNoteAdapter);
     }
 
     /**

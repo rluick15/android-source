@@ -11,6 +11,7 @@
 
         <EditText
             android:id="@+id/newNote"
+            android:hint="@string/note_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -30,4 +31,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/empty_list_view"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_string_list"
+        android:visibility="gone" />
 </RelativeLayout>

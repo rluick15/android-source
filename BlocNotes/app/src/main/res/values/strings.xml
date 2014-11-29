@@ -20,5 +20,7 @@
     <string name="new_notebook_create">Create</string>
     <string name="new_notebook_cancel">Cancel</string>
     <string name="create_notebook">Create Notebook</string>
+    <string name="empty_string_list">This notebook is lonely!\n\nBegin typing above to create\nyour first note!</string>
+    <string name="note_hint">Type your note here!</string>
 
 </resources>
