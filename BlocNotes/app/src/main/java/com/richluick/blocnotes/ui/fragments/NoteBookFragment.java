@@ -12,37 +12,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 
-import com.richluick.blocnotes.BlocNotesApplication;
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.adapters.NoteAdapter;
 import com.richluick.blocnotes.ui.activities.BlocNotes;
 import com.richluick.blocnotes.utils.Constants;
 
-/**
- * Created by Rich on 11/10/2014.
- */
 public class NoteBookFragment extends ListFragment {
 
-    private String mNotebookName;
     private int mNotebookNumber;
 
     public EditText mNewNote;
-    private Typeface mHelvetica;
-    private Typeface mHelveticaNeue;
-    private Typeface mImpact;
-    private Button mCreateNoteButton;
+    private static Typeface mHelvetica;
+    private static Typeface mHelveticaNeue;
+    private static Typeface mImpact;
     private String mNewNoteText;
 
-    private SQLiteDatabase mDb;
     //private SimpleCursorAdapter mCursorAdapter;
     private NoteAdapter mNoteAdapter;
-    private Cursor mCursor;
-    private ListView mNotesListView;
+    private LayoutInflater mInflater;
 
-    public NoteBookFragment(String notebook, int notebookNumber) {
-        this.mNotebookName = notebook;
+    public NoteBookFragment(int notebookNumber) {
         this.mNotebookNumber = notebookNumber;
     }
 
@@ -57,51 +47,38 @@ public class NoteBookFragment extends ListFragment {
         View rootView = inflater.inflate(R.layout.fragment_notebook, container, false);
         setHasOptionsMenu(true);
         setRetainInstance(true);
+        mInflater = inflater;
 
         //Call this method in the Main Activity to ensure that mNoteBookFragment represents the
         //current fragment
-        ((BlocNotes) getActivity()).setmNoteBookFragment();
+        ((BlocNotes) getActivity()).setNoteBookFragment();
 
         //restore state of app when activity is destroyed and restarted
-        mDb = BlocNotesApplication.get(getActivity()).getReadableDb();
         mNewNote = (EditText) rootView.findViewById(R.id.newNote);
         if (savedInstanceState != null) {
             setNewNoteText(savedInstanceState.getString(Constants.SAVE_TEXT));
         }
-
-        //setup the cursor and the note adapter objects
-        mCursor = getCursor(mDb);
-        mNoteAdapter = new NoteAdapter(getActivity(), mCursor, inflater);
 
         //Store the font assets as variables
         mHelvetica = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Helvetica_Reg.ttf");
         mHelveticaNeue = Typeface.createFromAsset(getActivity().getAssets(), "fonts/HelveticaNeue_Lt.ttf");
         mImpact = Typeface.createFromAsset(getActivity().getAssets(), "fonts/impact.ttf");
 
+        //Call the method in the main activity to get the cursor and set the adapter
+        ((BlocNotes) getActivity()).getNotebookCursorInBackground();
+
         //set the onClickListener for the Create Note Button. Save the note when clicked
-        mCreateNoteButton = (Button) rootView.findViewById(R.id.createNoteButton);
-        mCreateNoteButton.setOnClickListener(new View.OnClickListener() {
+        Button createNoteButton = (Button) rootView.findViewById(R.id.createNoteButton);
+        createNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mNewNoteText = mNewNote.getText().toString();
                 ContentValues values = new ContentValues();
                 values.put(Constants.TABLE_COLUMN_NOTES_BODY, mNewNoteText);
                 values.put(Constants.TABLE_COLUMN_NOTES_NOTEBOOK, mNotebookNumber);
-                mDb.insert(Constants.TABLE_NOTES_NAME, null, values);
-
-                //refresh the list of notes with the updated set of data
-                mCursor = getCursor(mDb);
-                mNoteAdapter.changeCursor(mCursor);
-                mNoteAdapter.notifyDataSetChanged();
-
-                setNewNoteText(""); //clear the text
+                ((BlocNotes) getActivity()).createNewNote(values);
             }
         });
-
-        //get the singleton database from the application class
-        mDb = BlocNotesApplication.get(getActivity()).getReadableDb();
-        //db cursor query for Notebook names
-        setListAdapter(mNoteAdapter);
 
         //Simple cursor adapter for displaying notebook names in custom listview
 //        mCursorAdapter = new SimpleCursorAdapter(getActivity(),
@@ -127,11 +104,41 @@ public class NoteBookFragment extends ListFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        mDb.close(); //close the database
     }
 
-    private Cursor getCursor(SQLiteDatabase db) {
+    /**
+     * This method is called on the Notebook object from the main activity. It takes a cursor object
+     * and refreshes the note list when a new note is added. It also clears the text field
+     *
+     * param cursor The cursor object with the new database query stored in it
+     * */
+    public void refreshNoteList(Cursor cursor) {
+        mNoteAdapter.changeCursor(cursor);
+        mNoteAdapter.notifyDataSetChanged();
+
+        setNewNoteText(""); //clear the text
+
+    }
+
+    /**
+     * This method is called on the Notebook object from the main activity. It takes a cursor object
+     * and sets the note adapter using it
+     *
+     * param cursor The cursor object with the database query stored in it
+     * */
+    public void setNotebookAdapter(Cursor cursor) {
+        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater);
+        setListAdapter(mNoteAdapter);
+    }
+
+    /**
+     * This method takes a database object and gets the cursor specific to the database of
+     * notes being displayed. It then returns the cursor object
+     *
+     * param db the database being queried
+     * return Cursor the cursor object with the queried data
+     * */
+    public Cursor getCursor(SQLiteDatabase db) {
         return db.query(Constants.TABLE_NOTES_NAME,
                 new String[] {Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_NOTES_BODY},
                 Constants.TABLE_COLUMN_NOTES_NOTEBOOK + " IS ?",

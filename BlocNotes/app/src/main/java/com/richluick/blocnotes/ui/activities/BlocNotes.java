@@ -2,8 +2,11 @@ package com.richluick.blocnotes.ui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
 
+import com.richluick.blocnotes.BlocNotesApplication;
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.ui.fragments.AddNotebookFragment;
 import com.richluick.blocnotes.ui.fragments.CustomStyleDialogFragment;
@@ -35,6 +39,9 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private NoteBookFragment mNoteBookFragment;
 
+    private SQLiteDatabase mDb;
+    Context mContext;
+
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -44,6 +51,16 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bloc_notes);
+        mContext = this;
+
+        //get a writable database to use throughout the app
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                mDb = BlocNotesApplication.get(mContext).getWritableDb();
+            }
+        }.start();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -60,10 +77,10 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
 
         //create a new note fragment if one has not been created yet
         try {
-            setmNoteBookFragment();
-        } catch(ClassCastException e) {}
+            setNoteBookFragment();
+        } catch(ClassCastException ignored) {}
         if (mNoteBookFragment == null) {
-            mNoteBookFragment = new NoteBookFragment(Constants.TABLE_NOTEBOOKS_UNCATEGORIZED, 0);
+            mNoteBookFragment = new NoteBookFragment(0);
             getFragmentManager().beginTransaction().replace(R.id.container, mNoteBookFragment).commit();
             getFragmentManager().executePendingTransactions();
         }
@@ -76,6 +93,94 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         onFontChange(null, fontPref);
 
         setSharedPrefs();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mDb != null) {
+            mDb.close(); //close the database
+        }
+    }
+
+    /**
+     * This method is called when a new NoteBook fragment is opened. It runs on a background thread
+     * and retrieves a writable database and uses it to run a query and store that into a
+     * cursor object. It then call a method to populate the notebook screen with all the notes
+     * assigned to that notebook
+     * */
+    public void getNotebookCursorInBackground() {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                final Cursor cursor = mNoteBookFragment.getCursor(mDb);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNoteBookFragment.setNotebookAdapter(cursor);
+                    }
+                });
+            }
+        }.start();
+    }
+
+    /**
+     * This method is called when a new note is added to the notebook. It adds the text to the
+     * writable database opened when the Notebook was opened and then calls a method to
+     * update the UI with the new list of notes
+     *
+     * @param values
+     */
+    public void createNewNote(final ContentValues values) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                mDb.insert(Constants.TABLE_NOTES_NAME, null, values);
+                final Cursor cursor = mNoteBookFragment.getCursor(mDb);
+                BlocNotes.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNoteBookFragment.refreshNoteList(cursor);
+                    }
+                });
+            }
+        }.start();
+    }
+
+    /**
+     * This method is called when a new notebook is created by the user. It adds it to the
+     * database then recreates the cursor query and then calls a method to update the
+     * Cursor Adapter in the navigation drawer
+     *
+     * @param newTitle This is the new Title for the notebook the user has created
+     */
+    @Override
+    public void onDatabaseUpdate(final String newTitle) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                ContentValues values = new ContentValues();
+                values.put(Constants.TABLE_COLUMN_NOTEBOOK_NAME, newTitle);
+                mDb.insert(Constants.TABLE_NOTEBOOKS_NAME,null,values);
+
+                //get the new cursor and update the database
+                final Cursor cursor = mNavigationDrawerFragment.getCursor(mDb);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNavigationDrawerFragment.updateDatabase(cursor);
+                    }
+                });
+            }
+        }.start();
     }
 
     /**
@@ -83,7 +188,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
      * being displayed on the screen. It is called onCreate of the Main Activity as well as from
      * the fragments onCreateView to ensure it is changed upon opening of the new fragment
      * */
-    public void setmNoteBookFragment() {
+    public void setNoteBookFragment() {
         mNoteBookFragment = (NoteBookFragment) getFragmentManager().findFragmentById(R.id.container);
     }
 
@@ -129,11 +234,6 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
 
     @Override
-    public void onDatabaseUpdate(String newTitle) {
-        mNavigationDrawerFragment.updateDatabase(newTitle);
-    }
-
-    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -146,24 +246,26 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         if(mNavigationDrawerFragment != null) {
             int adjustedNumber = number - 1;
             SimpleCursorAdapter cursorAdapter = mNavigationDrawerFragment.getCursorAdapter();
-            Cursor cursor = (Cursor) cursorAdapter.getItem(adjustedNumber);
-            String notebookName = cursor.getString(
-                    cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
-            mTitle = notebookName; //set the page title to the specific notebooks name
+            if(cursorAdapter != null) {
+                Cursor cursor = (Cursor) cursorAdapter.getItem(adjustedNumber);
+                //set the page title to the specific notebooks name
+                mTitle = cursor.getString(
+                        cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
 
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, new NoteBookFragment(notebookName, adjustedNumber))
-                    .commit();
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, new NoteBookFragment(adjustedNumber))
+                        .commit();
+            }
         }
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
+        assert actionBar != null;
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -240,8 +342,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_bloc_notes, container, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment_bloc_notes, container, false);
         }
 
         @Override

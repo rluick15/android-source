@@ -4,7 +4,6 @@ package com.richluick.blocnotes.ui.fragments;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -69,6 +68,7 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+
     public NavigationDrawerFragment() {}
 
     @Override
@@ -100,11 +100,9 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
 
-        //get the singleton database from the application class
         SQLiteDatabase db = BlocNotesApplication.get(getActivity()).getReadableDb();
-        //db cursor query for Notebook names
         Cursor cursor = getCursor(db);
-        //Simple cursor adapter for displaying notebook names in listview
+
         mCursorAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 cursor,
@@ -122,7 +120,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         mDrawerListView.setAdapter(mCursorAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        db.close();
 
         return mDrawerListView;
     }
@@ -131,20 +128,12 @@ public class NavigationDrawerFragment extends Fragment {
         return mCursorAdapter;
     }
 
-    public void updateDatabase(String newTitle) {
-        SQLiteDatabase db = BlocNotesApplication.get(getActivity()).getWritableDb();
-        ContentValues values = new ContentValues();
-        values.put(Constants.TABLE_COLUMN_NOTEBOOK_NAME, newTitle);
-        db.insert(Constants.TABLE_NOTEBOOKS_NAME, null, values);
-
-        //get the new cursor and update and close the database
-        Cursor cursor = getCursor(db);
+    public void updateDatabase(Cursor cursor) {
         mCursorAdapter.changeCursor(cursor);
         mCursorAdapter.notifyDataSetChanged();
-        db.close();
     }
 
-    private Cursor getCursor(SQLiteDatabase db) {
+    public Cursor getCursor(SQLiteDatabase db) {
         return db.query(Constants.TABLE_NOTEBOOKS_NAME,
                     new String[] {Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_NOTEBOOK_NAME},
                     null, null, null, null, null, null);
