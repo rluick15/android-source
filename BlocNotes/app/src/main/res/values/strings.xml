@@ -31,5 +31,9 @@
     <string name="delete_note_toast">Note Deleted!</string>
     <string name="update_note_toast">Note Updated!</string>
     <string name="title_set_reminder">Set Reminder</string>
+    <string name="alarm_set_text">Alarm Set!</string>
+    <string name="alarm_notification_title">BlocNotes Reminder!</string>
+    <string name="notification_delete_text">Delete</string>
+    <string name="notification_snooze_text">Snooze</string>
 
 </resources>

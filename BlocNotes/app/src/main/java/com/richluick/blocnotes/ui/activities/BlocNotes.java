@@ -3,6 +3,7 @@ package com.richluick.blocnotes.ui.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -66,6 +67,9 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         setContentView(R.layout.activity_bloc_notes);
         mContext = this;
 
+        //handle incoming intents
+        incomingIntent();
+
         //get a writable database to use throughout the app
         new Thread() {
             @Override
@@ -114,6 +118,33 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         super.onDestroy();
         if(mDb != null) {
             mDb.close(); //close the database
+        }
+    }
+
+    /**
+     * This method is called when the activity is first created and is responsible for handling
+     * incoming intents to the main activity. It checks if intent is null and if not, executes
+     * code depending on the action constant of the intent. This was moved from onCreate primarily
+     * for organizational and "cleanliness" purposes.
+     * */
+    private void incomingIntent() {
+        Intent intent = getIntent();
+        if(intent != null && (intent.getAction()).equals(Constants.ACTION_CONTENT)) {
+            String intentId = intent.getStringExtra(Constants.KEY_NOTE_ID);
+            String intentBody = intent.getStringExtra(Constants.KEY_NOTE_BODY);
+            int notebookNumber = intent.getIntExtra(Constants.KEY_NOTEBOOK_NUMBER, 0);
+            editTextDialog(intentBody, intentId);
+            intent.setAction(Constants.ACTION_BLANK);
+            if(mNavigationDrawerFragment != null) {
+                goToNotebook(notebookNumber);
+            }
+        }
+
+        //dismiss the notification(if relevant) when an option is selected
+        if (Context.NOTIFICATION_SERVICE != null) {
+            String ns = Context.NOTIFICATION_SERVICE;
+            NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(ns);
+            nMgr.cancel(Constants.KEY_INTENT_REQUEST_CODE_ZERO);
         }
     }
 
@@ -243,7 +274,12 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     @Override
     public void onThemeChange(CustomStyleDialogFragment dialog, int themeId) {}
 
-
+    /**
+     * This method launches a dialog fragment and allows the user to edit the selected note
+     *
+     * @param noteText the current text in the note body
+     * @param noteId the id of the note in the database table
+     * */
     @Override
     public void editTextDialog(String noteText, String noteId) {
         FragmentManager fm = getSupportFragmentManager();
@@ -251,25 +287,56 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         editNoteFragment.show(fm, "dialog");
     }
 
-    public void setReminderDialog(String noteText, String noteId) {
+    /**
+     * This method launches a dialog fragment and allows the user to set an alarm reminder for a
+     * specific note
+     *  @param noteText the current text in the note body
+     * @param noteId the id of the note in the database table
+     * @param notebookNumber the id number corresponding to the notebook
+     * */
+    public void setReminderDialog(String noteText, String noteId, int notebookNumber) {
         FragmentManager fm = getSupportFragmentManager();
-        SetReminderFragment reminderFragment = new SetReminderFragment(noteText, noteId);
+        SetReminderFragment reminderFragment = new SetReminderFragment(noteText, noteId, notebookNumber);
         reminderFragment.show(fm, "dialog");
     }
 
+    /**
+     * This method is called from the reminder dialog and sets a reminder alarm based upon
+     * the time the user selected
+     *
+     * @param noteText the current text in the note body
+     * @param noteId the id of the note in the database table
+     * */
     @Override
-    public void setAlertAlarm(int reminderKey, String noteText, String noteId) {
-        int alertTime;
-
-
+    public void setAlertAlarm(int reminderKey, String noteText, String noteId, int notebookNumber) {
+        int alertTime = 0;
+        switch(reminderKey) {
+            case 0:
+                alertTime = 5;
+                break;
+            case 1:
+                alertTime = 10;
+                break;
+            case 2:
+                alertTime = 30;
+                break;
+            case 3:
+                alertTime = 60;
+                break;
+        }
 
         Intent reminderReceiverIntent = new Intent(this, ReminderReceiver.class);
-        reminderReceiverIntent.setAction("SHOW_NOTIFICATION");
-        PendingIntent reminderPendingIntent = PendingIntent.getBroadcast(this, 0, reminderReceiverIntent, 0);
+        reminderReceiverIntent.setAction(Constants.ACTION_SHOW_NOTIFICATION);
+        reminderReceiverIntent.putExtra(Constants.KEY_NOTE_BODY, noteText);
+        reminderReceiverIntent.putExtra(Constants.KEY_NOTE_ID, noteId);
+        reminderReceiverIntent.putExtra(Constants.KEY_NOTEBOOK_NUMBER, notebookNumber);
+        PendingIntent reminderPendingIntent = PendingIntent.getBroadcast(this, 0, reminderReceiverIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC,
-                System.currentTimeMillis() + 5 * 60 * 1000,
+        alarmManager.set(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + alertTime * 60 * 1000,
                 reminderPendingIntent);
+        Toast.makeText(this, getString(R.string.alarm_set_text), Toast.LENGTH_SHORT).show();
     }
 
     public void updateDatabaseNewText(final String updatedNote, final String noteId) {
@@ -327,17 +394,21 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     public void onSectionAttached(int number) {
         if(mNavigationDrawerFragment != null) {
             int adjustedNumber = number - 1;
-            SimpleCursorAdapter cursorAdapter = mNavigationDrawerFragment.getCursorAdapter();
-            if(cursorAdapter != null) {
-                Cursor cursor = (Cursor) cursorAdapter.getItem(adjustedNumber);
-                //set the page title to the specific notebooks name
-                mTitle = cursor.getString(
-                        cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
+            goToNotebook(adjustedNumber);
+        }
+    }
 
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.container, new NoteBookFragment(adjustedNumber))
-                        .commit();
-            }
+    private void goToNotebook(int notebookNumber) {
+        SimpleCursorAdapter cursorAdapter = mNavigationDrawerFragment.getCursorAdapter();
+        if(cursorAdapter != null) {
+            Cursor cursor = (Cursor) cursorAdapter.getItem(notebookNumber);
+            //set the page title to the specific notebooks name
+            mTitle = cursor.getString(
+                    cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
+
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new NoteBookFragment(notebookNumber))
+                    .commit();
         }
     }
 

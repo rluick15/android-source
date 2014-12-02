@@ -12,11 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.ui.activities.BlocNotes;
+import com.richluick.blocnotes.ui.fragments.NoteBookFragment;
 import com.richluick.blocnotes.utils.Constants;
 
 public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemClickListener {
@@ -31,17 +33,22 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
     private String mNoteId;
 
     private View mView;
+    private ViewGroup mParent;
+    private NoteBookFragment mNotebookFragment;
 
-    public NoteAdapter(Context context, Cursor cursor, LayoutInflater inflater, int notebookNumber) {
+
+    public NoteAdapter(Context context, Cursor cursor, LayoutInflater inflater, int notebookNumber, NoteBookFragment noteBookFragment) {
         super(context, cursor);
         this.mContext = context;
         this.inflater = LayoutInflater.from(context);
         this.cursor = cursor;
         this.mNotebookNumber = notebookNumber;
+        this.mNotebookFragment = noteBookFragment;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        mParent = parent;
         mView = inflater.inflate(R.layout.note_adapter, null);
         ViewHolder holder = new ViewHolder();
         holder.body = (TextView) mView.findViewById(R.id.noteText);
@@ -86,7 +93,7 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
             ((BlocNotes) mContext).editTextDialog(mNoteText, mNoteId);
             break;
         case 1:
-            //((BlocNotes) mContext).setReminderDialog(mNoteText, mNoteId);
+            ((BlocNotes) mContext).setReminderDialog(mNoteText, mNoteId, mNotebookNumber);
             break;
         case 2:
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -112,8 +119,11 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
      * param font the font object the user selected passed on from the NoteBookFragment
      * */
     public void setCustomFont(Typeface font) {
-        ViewHolder holder = (ViewHolder) mView.getTag();
-        holder.body.setTypeface(font);
+        ListView lv = (ListView) mParent;
+        for(int i = 0; i < lv.getChildCount(); i++) {
+            TextView note = (TextView) lv.getChildAt(i).findViewById(R.id.noteText);
+            note.setTypeface(font);
+        }
     }
 
     /**
@@ -142,6 +152,7 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
 
     public interface OnNoteBookAdapterListener {
         public void editTextDialog(String noteText, String noteId);
+        public void setReminderDialog(String noteText, String noteId, int notebookNumber);
         public void deleteNote(String noteId);
     }
 }

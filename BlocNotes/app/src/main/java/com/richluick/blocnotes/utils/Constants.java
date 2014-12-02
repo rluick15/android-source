@@ -29,4 +29,15 @@ public class Constants {
                 public static final String TABLE_COLUMN_NOTES_BODY = "body";
                 public static final String TABLE_COLUMN_NOTES_NOTEBOOK= "notebook";
 
+    //Intent Constants
+    public static final int KEY_INTENT_REQUEST_CODE_ZERO = 0;
+    public static final String KEY_NOTE_BODY = "noteBody";
+    public static final String KEY_NOTE_ID = "noteID";
+    public static final String KEY_NOTEBOOK_NUMBER = "notebookNumber";
+    public static final String ACTION_BLANK = "";
+    public static final String ACTION_SHOW_NOTIFICATION = "showNotification";
+    public static final String ACTION_DISMISS = "dismiss";
+    public static final String ACTION_SNOOZE = "snooze";
+    public static final String ACTION_CONTENT = "content";
+
 }

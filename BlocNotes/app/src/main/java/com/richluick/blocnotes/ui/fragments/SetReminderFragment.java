@@ -3,7 +3,6 @@ package com.richluick.blocnotes.ui.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +19,14 @@ public class SetReminderFragment extends DialogFragment {
     private String mNoteText;
     private String mNoteId;
     private int mReminderKey;
+    private int mNotebookNumber;
 
     public SetReminderFragment() {}
 
-    public SetReminderFragment(String noteText, String noteId) {
+    public SetReminderFragment(String noteText, String noteId, int notebookNumber) {
         this.mNoteText = noteText;
         this.mNoteId = noteId;
+        this.mNotebookNumber = notebookNumber;
     }
 
     @Override
@@ -50,7 +51,6 @@ public class SetReminderFragment extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mReminderKey = i;
-                Log.e("ERROR", String.valueOf(i));
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
@@ -70,7 +70,7 @@ public class SetReminderFragment extends DialogFragment {
         setReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((BlocNotes) getActivity()).setAlertAlarm(mReminderKey, mNoteText, mNoteId);
+                ((BlocNotes) getActivity()).setAlertAlarm(mReminderKey, mNoteText, mNoteId, mNotebookNumber);
                 dismiss();
             }
         });
@@ -99,7 +99,7 @@ public class SetReminderFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSetAlarmListener {
-        public void setAlertAlarm(int reminderKey, String noteText, String noteId);
+        public void setAlertAlarm(int reminderKey, String noteText, String noteId, int notebookNumber);
     }
 
 }

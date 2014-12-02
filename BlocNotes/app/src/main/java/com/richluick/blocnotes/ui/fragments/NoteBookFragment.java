@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.adapters.NoteAdapter;
-import com.richluick.blocnotes.database.tables.NotesTable;
 import com.richluick.blocnotes.ui.activities.BlocNotes;
 import com.richluick.blocnotes.utils.Constants;
 
@@ -34,9 +33,6 @@ public class NoteBookFragment extends ListFragment {
     //private SimpleCursorAdapter mCursorAdapter;
     private NoteAdapter mNoteAdapter;
     private LayoutInflater mInflater;
-
-    //Note Model
-    private NotesTable mNotesTable = new NotesTable();
 
     public NoteBookFragment(int notebookNumber) {
         this.mNotebookNumber = notebookNumber;
@@ -132,7 +128,7 @@ public class NoteBookFragment extends ListFragment {
      * param cursor The cursor object with the database query stored in it
      * */
     public void setNotebookAdapter(Cursor cursor) {
-        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater, mNotebookNumber);
+        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater, mNotebookNumber, this);
         mNotesListView.setEmptyView(mEmptyView);
         mNotesListView.setAdapter(mNoteAdapter);
     }
@@ -159,22 +155,22 @@ public class NoteBookFragment extends ListFragment {
      * param fontName the name of the font the user selected
      * */
     public void setCustomFont(String fontName) {
-        if(mNewNote != null) {
+        if(mNewNote != null && mNoteAdapter != null) {
             if (fontName.equals("Helvetica")) {
                 mNewNote.setTypeface(mHelvetica);
-               // mNoteAdapter.setCustomFont(mHelvetica);
+                mNoteAdapter.setCustomFont(mHelvetica);
             }
             else if (fontName.equals("Helvetica-Neue")) {
                 mNewNote.setTypeface(mHelveticaNeue);
-               // mNoteAdapter.setCustomFont(mHelveticaNeue);
+                mNoteAdapter.setCustomFont(mHelveticaNeue);
             }
             else if (fontName.equals("Impact")) {
                 mNewNote.setTypeface(mImpact);
-                //mNoteAdapter.setCustomFont(mImpact);
+                mNoteAdapter.setCustomFont(mImpact);
             }
             else {
                 mNewNote.setTypeface(Typeface.DEFAULT);
-                //mNoteAdapter.setCustomFont(Typeface.DEFAULT);
+                mNoteAdapter.setCustomFont(Typeface.DEFAULT);
             }
         }
     }
