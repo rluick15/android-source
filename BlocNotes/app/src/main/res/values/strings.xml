@@ -30,5 +30,6 @@
     <string name="delete_note_button_text">Delete</string>
     <string name="delete_note_toast">Note Deleted!</string>
     <string name="update_note_toast">Note Updated!</string>
+    <string name="title_set_reminder">Set Reminder</string>
 
 </resources>

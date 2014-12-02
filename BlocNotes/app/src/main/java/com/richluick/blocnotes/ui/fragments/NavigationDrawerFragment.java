@@ -27,6 +27,7 @@ import android.widget.SimpleCursorAdapter;
 
 import com.richluick.blocnotes.BlocNotesApplication;
 import com.richluick.blocnotes.R;
+import com.richluick.blocnotes.database.tables.NotebooksTable;
 import com.richluick.blocnotes.utils.Constants;
 
 /**
@@ -35,6 +36,8 @@ import com.richluick.blocnotes.utils.Constants;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+
+    private NotebooksTable mNotebooksTable = new NotebooksTable();
 
     private FragmentActivity mContext;
 
@@ -134,9 +137,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public Cursor getCursor(SQLiteDatabase db) {
-        return db.query(Constants.TABLE_NOTEBOOKS_NAME,
-                    new String[] {Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_NOTEBOOK_NAME},
-                    null, null, null, null, null, null);
+        return mNotebooksTable.notebooksQuery(db);
     }
 
     public boolean isDrawerOpen() {

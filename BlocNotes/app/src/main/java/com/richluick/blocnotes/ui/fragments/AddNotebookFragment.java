@@ -46,7 +46,7 @@ public class AddNotebookFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 mNewTitle = mNotebookTitle.getText().toString();
-                ((BlocNotes) getActivity()).onDatabaseUpdate(mNewTitle);
+                ((BlocNotes) getActivity()).addNotebook(mNewTitle);
                 dismiss();
             }
         });
@@ -89,7 +89,7 @@ public class AddNotebookFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        public void onDatabaseUpdate(String newTitle);
+        public void addNotebook(String newTitle);
     }
 
 }

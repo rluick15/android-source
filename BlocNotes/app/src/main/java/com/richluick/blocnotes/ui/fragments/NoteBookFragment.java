@@ -1,9 +1,7 @@
 package com.richluick.blocnotes.ui.fragments;
 
 import android.app.ListFragment;
-import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 
 import com.richluick.blocnotes.R;
 import com.richluick.blocnotes.adapters.NoteAdapter;
+import com.richluick.blocnotes.database.tables.NotesTable;
 import com.richluick.blocnotes.ui.activities.BlocNotes;
 import com.richluick.blocnotes.utils.Constants;
 
@@ -35,6 +34,9 @@ public class NoteBookFragment extends ListFragment {
     //private SimpleCursorAdapter mCursorAdapter;
     private NoteAdapter mNoteAdapter;
     private LayoutInflater mInflater;
+
+    //Note Model
+    private NotesTable mNotesTable = new NotesTable();
 
     public NoteBookFragment(int notebookNumber) {
         this.mNotebookNumber = notebookNumber;
@@ -77,10 +79,8 @@ public class NoteBookFragment extends ListFragment {
             @Override
             public void onClick(View view) {
                 mNewNoteText = mNewNote.getText().toString();
-                ContentValues values = new ContentValues();
-                values.put(Constants.TABLE_COLUMN_NOTES_BODY, mNewNoteText);
-                values.put(Constants.TABLE_COLUMN_NOTES_NOTEBOOK, mNotebookNumber);
-                ((BlocNotes) getActivity()).createNewNote(values);
+
+                ((BlocNotes) getActivity()).createNewNote(mNewNoteText, mNotebookNumber);
             }
         });
 
@@ -137,18 +137,8 @@ public class NoteBookFragment extends ListFragment {
         mNotesListView.setAdapter(mNoteAdapter);
     }
 
-    /**
-     * This method takes a database object and gets the cursor specific to the database of
-     * notes being displayed. It then returns the cursor object
-     *
-     * param db the database being queried
-     * return Cursor the cursor object with the queried data
-     * */
-    public Cursor getCursor(SQLiteDatabase db) {
-        return db.query(Constants.TABLE_NOTES_NAME,
-                new String[] {Constants.TABLE_COLUMN_ID, Constants.TABLE_COLUMN_NOTES_BODY},
-                Constants.TABLE_COLUMN_NOTES_NOTEBOOK + " IS ?",
-                new String[]{String.valueOf(mNotebookNumber)}, null, null, null, null);
+    public int getNotebookNumber(){
+        return mNotebookNumber;
     }
 
     /**

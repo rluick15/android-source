@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,7 +64,8 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
         //setup popup Menu
         mPopupMenu = new PopupMenu(mContext, mThreeDots);
         mPopupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, "Edit Note");
-        mPopupMenu.getMenu().add(Menu.NONE, 1, Menu.NONE, "Delete Note");
+        mPopupMenu.getMenu().add(Menu.NONE, 1, Menu.NONE, "Set Reminder");
+        mPopupMenu.getMenu().add(Menu.NONE, 2, Menu.NONE, "Delete Note");
         mPopupMenu.setOnMenuItemClickListener(this);
 
         mThreeDots = (ImageButton) mView.findViewById(R.id.threeDots);
@@ -84,6 +86,9 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
             ((BlocNotes) mContext).editTextDialog(mNoteText, mNoteId);
             break;
         case 1:
+            //((BlocNotes) mContext).setReminderDialog(mNoteText, mNoteId);
+            break;
+        case 2:
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setTitle(mContext.getString(R.string.delete_note_title))
                     .setMessage(mContext.getString(R.string.delete_note_message))
@@ -97,39 +102,38 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
             AlertDialog dialog = builder.create();
             dialog.show();
             break;
-        // Etc, etc.
     }
         return false;
     }
 
-//    /**
-//     * This is a setter method for setting the font the user has selected from the spinner.
-//     *
-//     * param font the font object the user selected passed on from the NoteBookFragment
-//     * */
-//    public void setCustomFont(Typeface font) {
-//        ViewHolder holder = (ViewHolder) mView.getTag();
-//        holder.body.setTypeface(font);
-//    }
-//
-//    /**
-//     * This is a setter method for setting the font style the user has selected from custom menu
-//     *
-//     * param styleId the integer id of the font stlye selected (SMALL, MEDIUM, LARGE)
-//     * */
-//    public void setCustomStyle(int styleId) {
-//        ViewHolder holder = (ViewHolder) mView.getTag();
-//        if (styleId == 1) {
-//            holder.body.setTextAppearance(mContext, android.R.style.TextAppearance_Small);
-//        }
-//        else if (styleId == 2) {
-//            holder.body.setTextAppearance(mContext, android.R.style.TextAppearance_Medium);
-//        }
-//        else if (styleId == 3) {
-//            holder.body.setTextAppearance(mContext, android.R.style.TextAppearance_Large);
-//        }
-//
-//    }
+    /**
+     * This is a setter method for setting the font the user has selected from the spinner.
+     *
+     * param font the font object the user selected passed on from the NoteBookFragment
+     * */
+    public void setCustomFont(Typeface font) {
+        ViewHolder holder = (ViewHolder) mView.getTag();
+        holder.body.setTypeface(font);
+    }
+
+    /**
+     * This is a setter method for setting the font style the user has selected from custom menu
+     *
+     * param styleId the integer id of the font stlye selected (SMALL, MEDIUM, LARGE)
+     * */
+    public void setCustomStyle(int styleId) {
+        ViewHolder holder = (ViewHolder) mView.getTag();
+        if (styleId == 1) {
+            holder.body.setTextAppearance(mContext, android.R.style.TextAppearance_Small);
+        }
+        else if (styleId == 2) {
+            holder.body.setTextAppearance(mContext, android.R.style.TextAppearance_Medium);
+        }
+        else if (styleId == 3) {
+            holder.body.setTextAppearance(mContext, android.R.style.TextAppearance_Large);
+        }
+
+    }
 
     private static class ViewHolder {
         TextView body;

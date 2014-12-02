@@ -21,6 +21,8 @@ public class EditNoteFragment extends DialogFragment {
     private Button mCancelButton;
     private String mNoteId;
 
+    public EditNoteFragment() {}
+
     public EditNoteFragment(String noteText, String noteId) {
         this.mNoteText = noteText;
         this.mNoteId = noteId;

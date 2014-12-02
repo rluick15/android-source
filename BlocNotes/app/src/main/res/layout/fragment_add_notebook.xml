@@ -17,7 +17,7 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin" />
 
     <EditText
-        android:id="@+id/editNoteText"
+        android:id="@+id/notebookTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/notebookNameText"
@@ -26,7 +26,7 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
     <LinearLayout
-        android:layout_below="@+id/newNotebookName"
+        android:layout_below="@+id/notebookTitle"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
