@@ -83,6 +83,7 @@ public class NoteBookFragment extends ListFragment {
             }
         });
 
+
         mNotesListView = (ListView) rootView.findViewById(android.R.id.list);
         mEmptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
 
@@ -92,7 +93,6 @@ public class NoteBookFragment extends ListFragment {
         Animator disappearAnim = ObjectAnimator.ofFloat(null, "alpha", 1f, 0f)
                 .setDuration(android.R.integer.config_longAnimTime);
         transition.setAnimator(LayoutTransition.APPEARING, appearAnim);
-        transition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
         transition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, disappearAnim);
         mNotesListView.setLayoutTransition(transition);
 
