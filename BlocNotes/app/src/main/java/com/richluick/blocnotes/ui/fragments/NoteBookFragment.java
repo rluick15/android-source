@@ -1,5 +1,8 @@
 package com.richluick.blocnotes.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
 import android.app.ListFragment;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -80,16 +83,18 @@ public class NoteBookFragment extends ListFragment {
             }
         });
 
-        //Simple cursor adapter for displaying notebook names in custom listview
-//        mCursorAdapter = new SimpleCursorAdapter(getActivity(),
-//                R.layout.note_adapter,
-//                cursor,
-//                new String[] {Constants.TABLE_COLUMN_NOTES_BODY},
-//                new int[] {R.id.noteText});
-//
         mNotesListView = (ListView) rootView.findViewById(android.R.id.list);
         mEmptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
-//        mNotesListView.setAdapter(mCursorAdapter);
+
+        LayoutTransition transition = new LayoutTransition();
+        Animator appearAnim = ObjectAnimator.ofFloat(null, "rotationX", 90f, 0f)
+                .setDuration(android.R.integer.config_shortAnimTime);
+        Animator disappearAnim = ObjectAnimator.ofFloat(null, "alpha", 1f, 0f)
+                .setDuration(android.R.integer.config_longAnimTime);
+        transition.setAnimator(LayoutTransition.APPEARING, appearAnim);
+        transition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING);
+        transition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, disappearAnim);
+        mNotesListView.setLayoutTransition(transition);
 
         return rootView;
     }
@@ -128,7 +133,7 @@ public class NoteBookFragment extends ListFragment {
      * param cursor The cursor object with the database query stored in it
      * */
     public void setNotebookAdapter(Cursor cursor) {
-        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater, mNotebookNumber, this);
+        mNoteAdapter = new NoteAdapter(getActivity(), cursor, mInflater, mNotebookNumber);
         mNotesListView.setEmptyView(mEmptyView);
         mNotesListView.setAdapter(mNoteAdapter);
     }

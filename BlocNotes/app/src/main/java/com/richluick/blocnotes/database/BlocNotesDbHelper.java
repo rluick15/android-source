@@ -42,9 +42,9 @@ public class BlocNotesDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        Iterator<Table> tables = sTables.iterator();
-        while (tables.hasNext()) {
-            tables.next().onUpgrade(sqLiteDatabase, oldVersion, newVersion);
+        if (oldVersion == 5 && newVersion == 6) {
+            sqLiteDatabase.execSQL("ALTER TABLE " + Constants.TABLE_NOTES_NAME +
+                    " ADD COLUMN " + Constants.TABLE_COLUMN_NOTES_IMAGE_NAME + " TEXT");
         }
     }
 }

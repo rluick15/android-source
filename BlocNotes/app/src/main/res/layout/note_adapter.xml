@@ -5,6 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:adjustViewBounds="true"
+        android:background="@android:color/darker_gray"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.2"
+        android:layout_gravity="left"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin" />
+
     <TextView
         android:id="@+id/noteText"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -12,19 +23,18 @@
         android:background="@android:color/darker_gray"
         android:text=""
         android:layout_gravity="left"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="@dimen/note_adapter_padding"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+        android:layout_marginBottom="@dimen/activity_vertical_margin"/>
 
     <ImageButton
         android:id="@+id/threeDots"
         android:src="@drawable/ic_menu_moreoverflow_normal_holo_light"
         android:background="@android:color/darker_gray"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:layout_gravity="right"
         android:layout_weight="0"
         android:padding="@dimen/note_adapter_padding"

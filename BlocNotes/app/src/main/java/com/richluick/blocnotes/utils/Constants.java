@@ -15,7 +15,7 @@ public class Constants {
     //Database Constants
         //Database
         public static final String DATABASE_NAME = "BlocNotes";
-        public static final int DATABASE_VERSION = 1;
+        public static final int DATABASE_VERSION = 6;
         //Tables
         public static final String TABLE_NOTES_NAME = "Notes";
         public static final String TABLE_NOTEBOOKS_NAME = "Notebooks";
@@ -28,6 +28,8 @@ public class Constants {
                 //Notes
                 public static final String TABLE_COLUMN_NOTES_BODY = "body";
                 public static final String TABLE_COLUMN_NOTES_NOTEBOOK= "notebook";
+                public static final String TABLE_COLUMN_NOTES_IMAGE_URL= "image_url";
+                public static final String TABLE_COLUMN_NOTES_IMAGE_NAME= "image_name";
 
     //Intent Constants
     public static final int KEY_INTENT_REQUEST_CODE_ZERO = 0;

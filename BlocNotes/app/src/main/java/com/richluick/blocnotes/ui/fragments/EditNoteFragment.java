@@ -96,6 +96,4 @@ public class EditNoteFragment extends DialogFragment {
         super.onDetach();
     }
 
-
-
 }

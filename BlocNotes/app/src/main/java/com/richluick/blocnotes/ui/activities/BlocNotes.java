@@ -3,6 +3,7 @@ package com.richluick.blocnotes.ui.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,12 +11,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +37,7 @@ import com.richluick.blocnotes.database.tables.NotesTable;
 import com.richluick.blocnotes.ui.fragments.AddNotebookFragment;
 import com.richluick.blocnotes.ui.fragments.CustomStyleDialogFragment;
 import com.richluick.blocnotes.ui.fragments.EditNoteFragment;
+import com.richluick.blocnotes.ui.fragments.ImageUrlFragment;
 import com.richluick.blocnotes.ui.fragments.NavigationDrawerFragment;
 import com.richluick.blocnotes.ui.fragments.NoteBookFragment;
 import com.richluick.blocnotes.ui.fragments.SetReminderFragment;
@@ -39,10 +45,20 @@ import com.richluick.blocnotes.ui.fragments.SettingsFragment;
 import com.richluick.blocnotes.utils.Constants;
 import com.richluick.blocnotes.utils.ReminderReceiver;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Random;
+
 
 public class BlocNotes extends FragmentActivity implements CustomStyleDialogFragment.OnFragmentInteractionListener,
         NavigationDrawerFragment.NavigationDrawerCallbacks, AddNotebookFragment.OnFragmentInteractionListener,
-        NoteAdapter.OnNoteBookAdapterListener, SetReminderFragment.OnSetAlarmListener {
+        NoteAdapter.OnNoteBookAdapterListener, SetReminderFragment.OnSetAlarmListener, ImageUrlFragment.OnSetUrlInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -102,8 +118,12 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             getFragmentManager().executePendingTransactions();
         }
 
+        Display display = getWindowManager().getDefaultDisplay();
+        float frameRate = display.getRefreshRate();
+
         //set user selected SharedPreferences or default settings if never set
         SharedPreferences sharedPrefs = getPreferences(0);
+        sharedPrefs.edit().putBoolean("enable_animations", frameRate > 40f).commit();
         int stylePref = sharedPrefs.getInt(Constants.PREF_FONT_SIZE, 2);
         String fontPref = sharedPrefs.getString(Constants.PREF_TYPEFACE, "");
         onStyleChange(null , stylePref);
@@ -151,7 +171,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     /**
      * This method is called when a new NoteBook fragment is opened. It runs on a background thread
      * and retrieves a writable database and uses it to run a query and store that into a
-     * cursor object. It then call a method to populate the notebook screen with all the notes
+     * cursor object. It then calls a method to populate the notebook screen with all the notes
      * assigned to that notebook
      * */
     public void getNotebookCursorInBackground() {
@@ -383,6 +403,99 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
     }
 
     @Override
+    public void setImageUrl(String noteId) {
+        FragmentManager fm = getSupportFragmentManager();
+        ImageUrlFragment imageUrlFragment = new ImageUrlFragment(noteId);
+        imageUrlFragment.show(fm, "dialog");
+    }
+
+    @Override
+    public void saveImageUrl(final String urlText, final String noteId) {
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                mNotesTable.addImageUrl(mDb, urlText, noteId);
+                //download the image and save to SD
+                Bitmap urlImage = null;
+                try {
+                    URL url = new URL(urlText);
+                    URLConnection urlConnection = url.openConnection();
+                    InputStream inputStream = urlConnection.getInputStream();
+                    urlImage = BitmapFactory.decodeStream(inputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                final boolean success = saveImageToSD(urlImage, noteId);
+                int notebookNumber = mNoteBookFragment.getNotebookNumber();
+                final Cursor cursor = mNotesTable.notesQuery(mDb, notebookNumber);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success == true) {
+                            mNoteBookFragment.refreshNoteList(cursor);
+                            Toast.makeText(BlocNotes.this,
+                                    getString(R.string.toast_image_url_added), Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle(getString(R.string.error_title))
+                                    .setMessage(getString(R.string.error_bad_url_no_sd))
+                                    .setPositiveButton(getString(android.R.string.ok), null);
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    }
+                });
+            }
+        }.start();
+    }
+
+    private boolean saveImageToSD(Bitmap image, String noteId) {
+        if (image == null) {
+            return false;
+        }
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File file = null;
+            ByteArrayOutputStream imageBytes = null;
+            String name = null;
+
+            boolean doesExist = true;
+            while (doesExist == true) {
+                Random generator = new Random();
+                int n = 100000;
+                n = generator.nextInt(n);
+                name = "Image-" + n + ".jpg";
+
+                imageBytes = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
+                File extCache = getExternalCacheDir();
+                file = new File(extCache.getAbsolutePath()
+                        + File.separator + name);
+
+                if (file.exists()) file.delete();
+                else doesExist = false;
+            }
+            mNotesTable.addImageName(mDb, name, noteId);
+
+            try {
+                file.createNewFile();
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(imageBytes.toByteArray());
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -407,6 +520,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
                     cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
 
             getFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     .replace(R.id.container, new NoteBookFragment(notebookNumber))
                     .commit();
         }
@@ -449,7 +563,10 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
         }
         if (id == R.id.action_settings) {
             SettingsFragment settingsFragment = new SettingsFragment();
-            getFragmentManager().beginTransaction().replace(R.id.container, settingsFragment)
+            getFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.card_flip_right_in, R.anim.card_flip_right_out,
+                            R.anim.card_flip_left_in, R.anim.card_flip_left_out)
+                    .replace(R.id.container, settingsFragment)
                     .addToBackStack(null).commit();
         }
         return super.onOptionsItemSelected(item);

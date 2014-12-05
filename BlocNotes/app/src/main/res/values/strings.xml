@@ -35,5 +35,14 @@
     <string name="alarm_notification_title">BlocNotes Reminder!</string>
     <string name="notification_delete_text">Delete</string>
     <string name="notification_snooze_text">Snooze</string>
+    <string name="popup_menu_edit_note">Edit Note</string>
+    <string name="popup_menu_set_reminder">Set Reminder</string>
+    <string name="popup_menu_set_image">Set Image Url</string>
+    <string name="popup_meu_delete_note">Delete Note</string>
+    <string name="title_image_url">Image Url</string>
+    <string name="toast_image_url_added">Image Url Added!</string>
+    <string name="toast_valid_url">Please enter a valid URL</string>
+    <string name="error_bad_url_no_sd">Please enter a valid Url and be sure your device has an SD card.</string>
+    <string name="error_title">Error</string>
 
 </resources>
