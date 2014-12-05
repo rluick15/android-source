@@ -87,6 +87,8 @@ public class NoteBookFragment extends ListFragment {
         mNotesListView = (ListView) rootView.findViewById(android.R.id.list);
         mEmptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
 
+
+
         LayoutTransition transition = new LayoutTransition();
         Animator appearAnim = ObjectAnimator.ofFloat(null, "rotationX", 90f, 0f)
                 .setDuration(android.R.integer.config_shortAnimTime);

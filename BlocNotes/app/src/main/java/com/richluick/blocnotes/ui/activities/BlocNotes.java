@@ -519,6 +519,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             mTitle = cursor.getString(
                     cursor.getColumnIndex(Constants.TABLE_COLUMN_NOTEBOOK_NAME));
 
+
             getFragmentManager().beginTransaction()
                     .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     .replace(R.id.container, new NoteBookFragment(notebookNumber))
@@ -562,6 +563,7 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             mNoteBookFragment.setNewNoteText("");
         }
         if (id == R.id.action_settings) {
+
             SettingsFragment settingsFragment = new SettingsFragment();
             getFragmentManager().beginTransaction()
                     .setCustomAnimations(R.anim.card_flip_right_in, R.anim.card_flip_right_out,
