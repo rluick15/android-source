@@ -57,7 +57,6 @@ public class NotesTable extends Table {
         values.put(Constants.TABLE_COLUMN_NOTES_IMAGE_URL, imageUrl);
         db.update(Constants.TABLE_NOTES_NAME, values,
                 Constants.TABLE_COLUMN_ID + " = ?", new String[]{noteId});
-        //Log.e("ERROR", imageUrl);
     }
 
     public void addImageName(SQLiteDatabase db, String imageName, String noteId) {

@@ -32,6 +32,7 @@ public class NoteBookFragment extends ListFragment {
     private String mNewNoteText;
     private ListView mNotesListView;
     private TextView mEmptyView;
+    private LayoutTransition mTransition;
 
     //private SimpleCursorAdapter mCursorAdapter;
     private NoteAdapter mNoteAdapter;
@@ -87,16 +88,14 @@ public class NoteBookFragment extends ListFragment {
         mNotesListView = (ListView) rootView.findViewById(android.R.id.list);
         mEmptyView = (TextView) rootView.findViewById(R.id.empty_list_view);
 
-
-
-        LayoutTransition transition = new LayoutTransition();
+        mTransition = new LayoutTransition();
         Animator appearAnim = ObjectAnimator.ofFloat(null, "rotationX", 90f, 0f)
                 .setDuration(android.R.integer.config_shortAnimTime);
-        Animator disappearAnim = ObjectAnimator.ofFloat(null, "alpha", 1f, 0f)
+        Animator disappearAnim = ObjectAnimator.ofFloat(null, "rotationX", 0f, 90f)
                 .setDuration(android.R.integer.config_longAnimTime);
-        transition.setAnimator(LayoutTransition.APPEARING, appearAnim);
-        transition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, disappearAnim);
-        mNotesListView.setLayoutTransition(transition);
+        mTransition.setAnimator(LayoutTransition.APPEARING, appearAnim);
+        mTransition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING, disappearAnim);
+        mNotesListView.setLayoutTransition(mTransition);
 
         return rootView;
     }
@@ -120,7 +119,8 @@ public class NoteBookFragment extends ListFragment {
      *
      * param cursor The cursor object with the new database query stored in it
      * */
-    public void refreshNoteList(Cursor cursor) {
+    public void refreshNoteList(final Cursor cursor) {
+        mTransition.removeChild(mNoteAdapter.getParent(), mNoteAdapter.getView());
         mNoteAdapter.changeCursor(cursor);
         mNoteAdapter.notifyDataSetChanged();
 

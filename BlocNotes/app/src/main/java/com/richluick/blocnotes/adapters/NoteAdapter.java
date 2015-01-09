@@ -191,6 +191,14 @@ public class NoteAdapter extends CursorAdapter implements PopupMenu.OnMenuItemCl
 
     }
 
+    public View getView() {
+        return mView;
+    }
+
+    public ViewGroup getParent() {
+        return mParent;
+    }
+
     private static class ViewHolder {
         TextView body;
         TextView id;

@@ -563,7 +563,6 @@ public class BlocNotes extends FragmentActivity implements CustomStyleDialogFrag
             mNoteBookFragment.setNewNoteText("");
         }
         if (id == R.id.action_settings) {
-
             SettingsFragment settingsFragment = new SettingsFragment();
             getFragmentManager().beginTransaction()
                     .setCustomAnimations(R.anim.card_flip_right_in, R.anim.card_flip_right_out,
